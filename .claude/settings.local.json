@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.youtube.com)",
+      "Bash(npm install:*)",
+      "Bash(ffmpeg -i \"C:\\\\Users\\\\ilyac\\\\OneDrive\\\\Documents\\\\_autonomOS\\\\REMOTION\\\\test\\\\my-video\\\\public\\\\funnel.mp4\" -vframes 1 -f image2 \"C:\\\\Users\\\\ilyac\\\\OneDrive\\\\Documents\\\\_autonomOS\\\\REMOTION\\\\test\\\\my-video\\\\public\\\\_funnel_frame.png\" -y)",
+      "Bash(where ffmpeg:*)",
+      "Bash(curl -s \"https://api.elevenlabs.io/v1/voices\" -H \"xi-api-key: sk_99c50eb52d18ae397c956835b3ba1159e3e26dd8b33fa098\")",
+      "Bash(node -e \"const d=[];process.stdin.on\\(''''data'''',c=>d.push\\(c\\)\\);process.stdin.on\\(''''end'''',\\(\\)=>{const j=JSON.parse\\(Buffer.concat\\(d\\).toString\\(\\)\\);const v=j.voices.filter\\(v=>v.name.toLowerCase\\(\\).includes\\(''''ava''''\\)\\);v.forEach\\(v=>console.log\\(v.voice_id, v.name, v.labels?.accent||'''''''', v.labels?.description||''''''''\\)\\)}\\)\")",
+      "Bash(node --strip-types scripts/generate-voiceover.ts)",
+      "Bash(node -e \"const d=[];process.stdin.on\\(''''data'''',c=>d.push\\(c\\)\\);process.stdin.on\\(''''end'''',\\(\\)=>{const j=JSON.parse\\(Buffer.concat\\(d\\).toString\\(\\)\\);j.voices.filter\\(v=>v.category===''''premade''''\\).forEach\\(v=>console.log\\(v.voice_id, v.name, v.labels?.description||'''''''', v.labels?.accent||''''''''\\)\\)}\\)\")",
+      "Bash(npx remotion:*)",
+      "Bash(NODE_OPTIONS=\"--openssl-legacy-provider\" npx remotion render DemoV2 out/demo-v2.mp4)",
+      "Bash(curl:*)",
+      "Bash(nvm list:*)",
+      "Bash(rm -rf node_modules)",
+      "Bash(export PATH=\"/c/Users/ilyac/AppData/Roaming/nvm/v22.22.2:$PATH\")",
+      "Read(//c/Users/ilyac/AppData/Roaming/**)",
+      "Read(//c/Users/ilyac/OneDrive/Documents/_autonomOS/REMOTION/test/my-video/$APPDATA/**)",
+      "Read(//c//**)",
+      "Bash(ls /c/Users/ilyac/AppData/Roaming/nvm/v22*/node.exe)",
+      "Read(//c/Users/ilyac/**)",
+      "Bash(export PATH=\"/c/Users/ilyac/AppData/Local/nvm/v22.22.2:/c/Users/ilyac/AppData/Local/nvm/v22.22.2/node_modules/npm/bin:$PATH\")",
+      "Bash(npm -v)",
+      "Bash(export PATH=\"/c/Users/ilyac/AppData/Local/nvm/v22.22.2:$PATH\")",
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"const d=[];process.stdin.on\\(''''data'''',c=>d.push\\(c\\)\\);process.stdin.on\\(''''end'''',\\(\\)=>{try{const j=JSON.parse\\(Buffer.concat\\(d\\).toString\\(\\)\\);console.log\\(JSON.stringify\\(j,null,2\\).slice\\(0,500\\)\\)}catch\\(e\\){console.log\\(Buffer.concat\\(d\\).toString\\(\\).slice\\(0,500\\)\\)}}\\)\")",
+      "Bash(powershell:*)"
+    ]
+  }
+}
