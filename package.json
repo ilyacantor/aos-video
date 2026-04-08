@@ -6,6 +6,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@playwright/test": "^1.59.1",
     "@remotion/cli": "^4.0.441",
     "@remotion/google-fonts": "^4.0.441",
     "@remotion/media": "^4.0.441",
