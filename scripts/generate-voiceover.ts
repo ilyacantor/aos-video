@@ -53,8 +53,28 @@ const SCENES: Scene[] = [
     text: "That's what AOS changes. One layer that sits on top of everything you already have. No migration. No rip and replace. It connects, it resolves, and it gives your entire organization a shared language.",
   },
   {
+    id: "scene2-discover",
+    text: "First, autonomOS discovers every system in your enterprise and builds a clean catalog of the IT assets we'll connect to.",
+  },
+  {
+    id: "scene2-connect",
+    text: "Our patented harness plugs into your existing integration infrastructure and routes your data to the Semantics engine.",
+  },
+  {
+    id: "scene2-resolve",
+    text: "There, your data isn't just normalized. The relationships inside it are discovered and stored in a Knowledge Graph.",
+  },
+  {
+    id: "scene2-ask",
+    text: "And this context-rich store becomes available in easy-to-consume formats — whether natural language query, or self-generating dashboards. Agents finally get the context they need to act, without hallucinating.",
+  },
+  {
     id: "scene3a-mai",
     text: "Every autonomOS deployment includes Mai — your customer success agent. Mai handles onboarding, training, and configuration changes, and knows the platform end-to-end. She also answers questions about your data, in natural language.",
+  },
+  {
+    id: "scene3a-mai-config",
+    text: "You can also ask Mai to reconfigure the platform — and changes happen instantly.",
   },
   {
     id: "scene3b-dashboards",

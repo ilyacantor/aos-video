@@ -30,12 +30,17 @@ const FONT = `${fontFamily}, sans-serif`;
 
 // ═══════════════════════════════════════════════════════════
 // Scene Durations (seconds) — sized to voiceover lengths
-// Voiceovers: S0=2.85s, S1=10.79s, S2=12.88s, S3A=14.31s, S3B=10.66s, S4=29.73s, S5≈29.4s (title 10.4s + 5 × ≤4s)
+// Voiceovers:
+//   S0=2.85s, S1=10.79s,
+//   S2: 4 clips (discover 7.18s + connect 6.11s + resolve 6.82s + ask 13.35s)
+//   S3A: mai 14.31s + mai-config 4.73s
+//   S3B=10.66s, S4=29.73s
+//   S5≈29.4s (title 10.4s + 5 × ≤4s)
 // ═══════════════════════════════════════════════════════════
 const S0_DUR = 4;
 const S1_DUR = 12;
-const S2_DUR = 14;
-const S3A_DUR = 15;
+const S2_DUR = 37; // "Introducing AOS": 5-stage zoom walkthrough of a1.jpeg
+const S3A_DUR = 21; // Mai: margin Q&A (first chat) + config changes (second chat)
 const S3B_DUR = 12;
 const S4_DUR = 31;
 const S5_DUR = 31; // Convergence: 11s title + 5 × 4s visuals
@@ -210,32 +215,63 @@ const Scene1Problems: React.FC = () => {
 };
 
 // ═══════════════════════════════════════════════════════════
-// Scene 2: AOS as Solution
+// Scene 2: Introducing AOS — 5-stage zoom walkthrough of a1.jpeg
 // ═══════════════════════════════════════════════════════════
-const AOS_TEXT = [
-  "AOS is a lightweight, rapidly deployed abstraction layer that floats on top of your IT landscape.",
-  "It doesn\u2019t move data. It doesn\u2019t replace systems.",
-  "It just connects to what\u2019s already there.",
-  "And understands what\u2019s already there.",
-];
-
+// Stage x-fractions across the rendered 1920-wide image:
+//   Stages 1+2 (discover): fx ≈ 0.20  →  tx = (0.5 - 0.20) * 1920 * scale
+//   Stage 3   (connect):  fx ≈ 0.50  →  tx = 0
+//   Stage 4   (resolve):  fx ≈ 0.70  →  tx = (0.5 - 0.70) * 1920 * scale
+//   Stage 5   (ask):      fx ≈ 0.90  →  tx = (0.5 - 0.90) * 1920 * scale
+// VO timing (measured):
+//   discover 7.18s · connect 6.11s · resolve 6.82s · ask 13.35s
+// Slot plan (with 0.5s establishing wide + 0.5s crossfades between stages):
+//   0.0-1.5s  establish (wide, title overlay)
+//   1.5-8.5s  stages 1+2 (discover)          VO 1.5s-8.68s
+//   8.5-15s   stage 3 (connect)              VO 8.5s-14.61s
+//   15-21.5s  stage 4 (resolve)              VO 15s-21.82s
+//   21.5-37s  stage 5 (ask)                  VO 21.5s-34.85s
 const Scene2Solution: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+  const t = (sec: number) => sec * fps;
 
-  const cardIn = spring({ frame, fps, config: { damping: 200 } });
-  // Spread text delays across the 12.88s voiceover
-  const textDelays = [1.5, 4, 7, 10];
+  // Zoom + pan keyframes — 0.5s eased transitions between holds.
+  const kfTimes = [
+    t(0),    t(0.5),  t(1.5),  t(8.0),
+    t(9.0),  t(14.5), t(15.5), t(21.0),
+    t(22.0), t(37.0),
+  ];
+  const kfScale = [1.0, 1.0, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9];
+  // tx for each hold position (scale = 1.9):
+  //   wide       : 0
+  //   stages 1+2 : (0.5 - 0.20) * 1920 * 1.9 =  1094.4
+  //   stage 3    : (0.5 - 0.50) * 1920 * 1.9 =     0
+  //   stage 4    : (0.5 - 0.70) * 1920 * 1.9 =  -729.6
+  //   stage 5    : (0.5 - 0.90) * 1920 * 1.9 = -1459.2
+  const kfTx = [
+    0, 0, 1094.4, 1094.4,
+    0, 0,
+    -729.6, -729.6,
+    -1459.2, -1459.2,
+  ];
 
-  // Image drifts in slowly from right and scales up as text appears
-  const imgProgress = lerp(frame, [0, 7 * fps], [0, 1]);
-  const imgX = interpolate(imgProgress, [0, 1], [120, 0]);
-  const imgScale = interpolate(imgProgress, [0, 1], [0.88, 1]);
-  const imgOpacity = lerp(frame, [0, 1.2 * fps], [0, 1]);
+  const scale = interpolate(frame, kfTimes, kfScale, {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const tx = interpolate(frame, kfTimes, kfTx, {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-  // Subtle continuous drift after settling
-  const drift = Math.sin(frame * 0.008) * 6;
-  const driftY = Math.cos(frame * 0.006) * 4;
+  // "Introducing autonomOS" title overlay — visible only during the
+  // establishing wide shot (0-1.5s).
+  const titleOpacity = interpolate(
+    frame,
+    [0, t(0.3), t(1.0), t(1.5)],
+    [0, 1, 1, 0],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
 
   return (
     <AbsoluteFill
@@ -243,111 +279,46 @@ const Scene2Solution: React.FC = () => {
         backgroundColor: C.bg,
         fontFamily: FONT,
         opacity: sceneFadeOut(frame, fps, S2_DUR),
+        overflow: "hidden",
       }}
     >
-      {/* ── Right side: A1 pipeline — floats in with 3D perspective ── */}
-      <div
+      <AbsoluteFill
         style={{
-          position: "absolute",
-          right: 0,
-          top: 0,
-          width: "72%",
-          height: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          perspective: 1200,
+          transform: `translateX(${tx}px) scale(${scale})`,
+          transformOrigin: "50% 50%",
         }}
+      >
+        <div style={{ width: 1920, flexShrink: 0 }}>
+          <Img
+            src={staticFile("a1.jpeg")}
+            style={{ width: "100%", display: "block" }}
+          />
+        </div>
+      </AbsoluteFill>
+
+      {/* ── Title overlay (only during establishing wide) ── */}
+      <AbsoluteFill
+        style={{ opacity: titleOpacity, pointerEvents: "none" }}
       >
         <div
           style={{
-            opacity: imgOpacity,
-            transform: `
-              translateX(${imgX + drift}px)
-              translateY(${driftY}px)
-              scale(${imgScale})
-              rotateY(${interpolate(imgProgress, [0, 1], [-12, -4])}deg)
-              rotateX(${interpolate(imgProgress, [0, 1], [6, 2])}deg)
-            `,
-            boxShadow: `
-              ${interpolate(imgProgress, [0, 1], [30, 15])}px
-              ${interpolate(imgProgress, [0, 1], [20, 10])}px
-              ${interpolate(imgProgress, [0, 1], [60, 40])}px
-              rgba(0,0,0,0.4)
-            `,
-            borderRadius: 10,
-            overflow: "hidden",
+            position: "absolute",
+            left: 60,
+            top: 60,
+            fontSize: 52,
+            fontWeight: 700,
+            lineHeight: 1.15,
+            textShadow: "0 2px 12px rgba(0,0,0,0.75)",
           }}
         >
-          <Img
-            src={staticFile("a1.jpeg")}
-            style={{
-              width: 1200,
-              objectFit: "contain",
-              display: "block",
-            }}
-          />
-        </div>
-      </div>
-
-      {/* ── Left side: card (20% smaller than before) ── */}
-      <div
-        style={{
-          position: "absolute",
-          left: 60,
-          top: "50%",
-          transform: `translateY(-50%) translateX(${interpolate(cardIn, [0, 1], [-20, 0])}px)`,
-          width: "24%",
-          background: C.cardBg,
-          border: `1px solid ${C.cardBorder}`,
-          borderTop: `3px solid ${C.orange}`,
-          borderRadius: 14,
-          padding: "24px 22px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 18,
-          opacity: cardIn,
-        }}
-      >
-        {/* Title */}
-        <div style={{ fontSize: 37, fontWeight: 600, lineHeight: 1.2 }}>
-          <span style={{ color: C.white }}>Introducing</span>
-          <br />
+          <span style={{ color: C.white }}>Introducing </span>
           <span style={{ color: C.white }}>autonom</span>
           <span style={{ color: C.teal }}>OS</span>
         </div>
-
-        {/* Separator */}
-        <div
-          style={{
-            width: 50,
-            height: 3,
-            borderRadius: 2,
-            background: C.teal,
-            opacity: 0.6,
-          }}
-        />
-
-        {/* Text lines */}
-        {AOS_TEXT.map((line, i) => {
-          const a = anim(frame, fps, textDelays[i]);
-          return (
-            <div
-              key={i}
-              style={{
-                fontSize: 26,
-                fontWeight: 500,
-                lineHeight: 1.5,
-                color: i >= 2 ? C.teal : C.white,
-                opacity: a.opacity,
-                transform: `translateY(${a.y}px)`,
-              }}
-            >
-              {line}
-            </div>
-          );
-        })}
-      </div>
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };
@@ -430,21 +401,52 @@ const Scene0Title: React.FC = () => {
 };
 
 // ═══════════════════════════════════════════════════════════
-// Scene 3a: NLQ Query Demo
+// Scene 3a: Mai — NLQ Q&A (first chat) + Config changes (second chat)
 // ═══════════════════════════════════════════════════════════
-// ── Chat exchange data ──
+// ── First chat: margin Q&A (0-14.5s, aligned with scene3a-mai.mp3 14.31s) ──
 const CHAT = [
   { q: "what\u2019s the margin this year?", a: "Gross: 39.6%, Operating: 22.6%, Net: 17.2%" },
   { q: "what was it in Q1?", a: "Gross margin in Q1 was 40%." },
   { q: "what were the drivers?", a: "Revenue increase 5%, direct comp flat." },
 ];
 
+// ── Second chat: config changes (14.5-21s, aligned with scene3a-mai-config.mp3 4.73s) ──
+// Each instruction gets a code-styled confirmation that appears instantly.
+const CHAT_CONFIG: { q: string; code: string }[] = [
+  { q: "Switch alerts to Slack", code: "notification.channel = slack" },
+  { q: "Make analytics my home page", code: "dashboard.default_view = analytics" },
+];
+
+// Window for the config chat relative to scene start
+const CONFIG_START = 14.5;
+// Each config exchange: type query, then show code line with "done" badge
+const CONFIG_EXCHANGES = [
+  { typeAt: CONFIG_START + 0.3, answerAt: CONFIG_START + 1.7 },
+  { typeAt: CONFIG_START + 3.0, answerAt: CONFIG_START + 4.4 },
+];
+
 const Scene3aNLQ: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const sec = frame / fps;
+  const t = (s: number) => s * fps;
 
+  // First-chat mount spring
   const modalIn = spring({ frame, fps, config: { damping: 200 } });
+
+  // First-chat exit + second-chat entry crossfade around 14.0-14.5s
+  const firstChatOpacity = interpolate(
+    frame,
+    [t(13.8), t(14.2)],
+    [1, 0],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
+  const secondChatOpacity = interpolate(
+    frame,
+    [t(14.2), t(14.6)],
+    [0, 1],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
 
   // Each exchange: type query → pause → show answer
   // Spread across the 14.31s Mai voiceover
@@ -464,7 +466,7 @@ const Scene3aNLQ: React.FC = () => {
         opacity: sceneFadeOut(frame, fps, S3A_DUR),
       }}
     >
-      {/* ── Chat modal ── */}
+      {/* ── First chat modal: margin Q&A ── */}
       <div
         style={{
           position: "absolute",
@@ -475,7 +477,7 @@ const Scene3aNLQ: React.FC = () => {
           background: "#1a1f2a",
           borderRadius: 16,
           overflow: "hidden",
-          opacity: modalIn,
+          opacity: modalIn * firstChatOpacity,
           boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
           display: "flex",
           flexDirection: "column",
@@ -643,6 +645,224 @@ const Scene3aNLQ: React.FC = () => {
             }}
           >
             Ask Maestra...
+          </div>
+          <div
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: 10,
+              background: C.teal,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 18,
+              color: "#1a1f2a",
+            }}
+          >
+            \u27A4
+          </div>
+        </div>
+      </div>
+
+      {/* ── Second chat modal: config changes ── */}
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 620,
+          background: "#1a1f2a",
+          borderRadius: 16,
+          overflow: "hidden",
+          opacity: secondChatOpacity,
+          boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {/* ── Header ── */}
+        <div
+          style={{
+            padding: "16px 20px",
+            borderBottom: "1px solid rgba(255,255,255,0.06)",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 6,
+              background: C.teal,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 14,
+              fontWeight: 800,
+              color: "#1a1f2a",
+            }}
+          >
+            M
+          </div>
+          <span style={{ fontSize: 18, fontWeight: 700, color: "#FFFFFF" }}>
+            Mai
+          </span>
+          <span style={{ fontSize: 14, color: "#666", marginLeft: 4 }}>
+            Platform config
+          </span>
+          <div style={{ marginLeft: "auto", display: "flex", gap: 12 }}>
+            {["\u22EE", "\u2013", "\u00D7"].map((s) => (
+              <span key={s} style={{ fontSize: 16, color: "#555", cursor: "default" }}>
+                {s}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Config chat messages area ── */}
+        <div
+          style={{
+            flex: 1,
+            padding: "20px 24px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+            minHeight: 380,
+          }}
+        >
+          {CONFIG_EXCHANGES.map((ex, i) => {
+            const entry = CHAT_CONFIG[i];
+
+            // Typewriter for the instruction
+            const typeElapsed = Math.max(0, sec - ex.typeAt);
+            const chars = Math.min(
+              Math.floor(typeElapsed * charsPerSec),
+              entry.q.length,
+            );
+            const typed = entry.q.slice(0, chars);
+            const queryVisible = sec >= ex.typeAt;
+            const cursorVisible = sec >= ex.typeAt && sec < ex.answerAt;
+            const blink = Math.sin(frame * 0.2) > 0;
+
+            // Code answer appears instantly with a small pop
+            const ansA = anim(frame, fps, ex.answerAt);
+
+            if (!queryVisible) return null;
+
+            return (
+              <div key={i} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {/* User instruction — right aligned */}
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <div
+                    style={{
+                      background: "rgba(255,255,255,0.08)",
+                      border: "1px solid rgba(255,255,255,0.12)",
+                      borderRadius: 20,
+                      padding: "10px 18px",
+                      maxWidth: 400,
+                      fontSize: 16,
+                      color: "#FFFFFF",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {typed}
+                    {cursorVisible && blink && (
+                      <span style={{ color: C.teal, marginLeft: 1 }}>|</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Config code line + done badge */}
+                {ansA.opacity > 0.01 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 10,
+                      alignItems: "center",
+                      opacity: ansA.opacity,
+                      transform: `translateY(${ansA.y}px)`,
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: 5,
+                        background: C.teal,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 11,
+                        fontWeight: 800,
+                        color: "#1a1f2a",
+                        flexShrink: 0,
+                      }}
+                    >
+                      M
+                    </div>
+                    <code
+                      style={{
+                        fontFamily:
+                          "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+                        fontSize: 15,
+                        color: C.teal,
+                        background: "rgba(21,227,214,0.08)",
+                        border: "1px solid rgba(21,227,214,0.22)",
+                        borderRadius: 6,
+                        padding: "6px 10px",
+                      }}
+                    >
+                      {entry.code}
+                    </code>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
+                        background: "rgba(16,185,129,0.15)",
+                        border: "1px solid rgba(16,185,129,0.35)",
+                        borderRadius: 999,
+                        padding: "4px 10px",
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: "#34d399",
+                      }}
+                    >
+                      <span>\u2713</span>
+                      <span>done</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* ── Input box ── */}
+        <div
+          style={{
+            padding: "12px 20px 16px",
+            borderTop: "1px solid rgba(255,255,255,0.06)",
+            display: "flex",
+            gap: 10,
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              flex: 1,
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 10,
+              padding: "10px 16px",
+              fontSize: 15,
+              color: "#555",
+            }}
+          >
+            Ask Mai to reconfigure...
           </div>
           <div
             style={{
@@ -1278,11 +1498,40 @@ export const DemoV2: React.FC = () => {
       <Sequence from={S0} durationInFrames={S1}>
         <Audio src={staticFile("voiceover/scene1-problems.mp3")} volume={0.9} />
       </Sequence>
-      <Sequence from={S0 + S1} durationInFrames={S2}>
-        <Audio src={staticFile("voiceover/scene2-solution.mp3")} volume={0.9} />
-      </Sequence>
+      {/* ── Scene 2: 4 per-stage voiceover clips aligned to zoom timing ── */}
+      {(() => {
+        const S2_BASE = S0 + S1;
+        // Stage offsets (frames) — match Scene2Solution kfTimes holds
+        const STAGE_12 = Math.round(1.5 * 30); // discover  @ 1.5s
+        const STAGE_3 = Math.round(8.5 * 30); //  connect   @ 8.5s
+        const STAGE_4 = Math.round(15.0 * 30); // resolve   @ 15s
+        const STAGE_5 = Math.round(21.5 * 30); // ask       @ 21.5s
+        return (
+          <>
+            <Sequence from={S2_BASE + STAGE_12} durationInFrames={S2 - STAGE_12}>
+              <Audio src={staticFile("voiceover/scene2-discover.mp3")} volume={0.9} />
+            </Sequence>
+            <Sequence from={S2_BASE + STAGE_3} durationInFrames={S2 - STAGE_3}>
+              <Audio src={staticFile("voiceover/scene2-connect.mp3")} volume={0.9} />
+            </Sequence>
+            <Sequence from={S2_BASE + STAGE_4} durationInFrames={S2 - STAGE_4}>
+              <Audio src={staticFile("voiceover/scene2-resolve.mp3")} volume={0.9} />
+            </Sequence>
+            <Sequence from={S2_BASE + STAGE_5} durationInFrames={S2 - STAGE_5}>
+              <Audio src={staticFile("voiceover/scene2-ask.mp3")} volume={0.9} />
+            </Sequence>
+          </>
+        );
+      })()}
+      {/* ── Scene 3A: Mai Q&A (first chat) + config changes (second chat) ── */}
       <Sequence from={S0 + S1 + S2} durationInFrames={S3A}>
         <Audio src={staticFile("voiceover/scene3a-mai.mp3")} volume={0.9} />
+      </Sequence>
+      <Sequence
+        from={S0 + S1 + S2 + Math.round(14.8 * 30)}
+        durationInFrames={S3A - Math.round(14.8 * 30)}
+      >
+        <Audio src={staticFile("voiceover/scene3a-mai-config.mp3")} volume={0.9} />
       </Sequence>
       <Sequence from={S0 + S1 + S2 + S3A} durationInFrames={S3B}>
         <Audio src={staticFile("voiceover/scene3b-dashboards.mp3")} volume={0.9} />
