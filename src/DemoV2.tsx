@@ -30,7 +30,7 @@ const FONT = `${fontFamily}, sans-serif`;
 
 // ═══════════════════════════════════════════════════════════
 // Scene Durations (seconds) — sized to voiceover lengths
-// Voiceovers: S0=2.85s, S1=10.79s, S2=12.88s, S3A=14.31s, S3B=10.66s, S4=29.73s, S5≈25s (target)
+// Voiceovers: S0=2.85s, S1=10.79s, S2=12.88s, S3A=14.31s, S3B=10.66s, S4=29.73s, S5≈29.4s (title 10.4s + 5 × ≤4s)
 // ═══════════════════════════════════════════════════════════
 const S0_DUR = 4;
 const S1_DUR = 12;
@@ -38,7 +38,7 @@ const S2_DUR = 14;
 const S3A_DUR = 15;
 const S3B_DUR = 12;
 const S4_DUR = 31;
-const S5_DUR = 27; // Convergence: 7s title + 5 × 4s visuals
+const S5_DUR = 31; // Convergence: 11s title + 5 × 4s visuals
 const FADE = 0.3; // uniform end-of-scene fade-out
 
 // ═══════════════════════════════════════════════════════════
@@ -1026,9 +1026,9 @@ const ConvergenceTitle: React.FC = () => {
   const { fps } = useVideoConfig();
 
   const fadeIn = lerp(frame, [0, 0.4 * fps], [0, 1]);
-  const scale = lerp(frame, [0, 7.5 * fps], [1, 1.04]);
+  const scale = lerp(frame, [0, 11.5 * fps], [1, 1.06]);
   // Fades out over 0.5s overlapping with slide 0's fade-in (crossfade)
-  const fadeOut = lerp(frame, [7 * fps, 7.5 * fps], [1, 0]);
+  const fadeOut = lerp(frame, [11 * fps, 11.5 * fps], [1, 0]);
 
   return (
     <AbsoluteFill
@@ -1182,7 +1182,7 @@ const Scene5Convergence: React.FC = () => {
         opacity: sceneFadeOut(frame, fps, S5_DUR),
       }}
     >
-      <Sequence from={0} durationInFrames={7 * 30 + OVERLAP} premountFor={15}>
+      <Sequence from={0} durationInFrames={11 * 30 + OVERLAP} premountFor={15}>
         <ConvergenceTitle />
       </Sequence>
       {CONV_VISUALS.map((v, i) => {
@@ -1190,7 +1190,7 @@ const Scene5Convergence: React.FC = () => {
         return (
           <Sequence
             key={v.src}
-            from={(7 + i * 4) * 30}
+            from={(11 + i * 4) * 30}
             durationInFrames={isLast ? 4 * 30 : 4 * 30 + OVERLAP}
             premountFor={15}
           >
@@ -1294,7 +1294,7 @@ export const DemoV2: React.FC = () => {
       {/* ── Scene 5 per-slide voiceovers ── */}
       {(() => {
         const S5_BASE = S0 + S1 + S2 + S3A + S3B + S4;
-        const TITLE = 7 * 30;
+        const TITLE = 11 * 30;
         const SLIDE = 4 * 30;
         return (
           <>

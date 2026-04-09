@@ -66,7 +66,7 @@ const SCENES: Scene[] = [
   },
   {
     id: "scene5-title",
-    text: "M&A creates complexity. Convergence delivers clarity — in hours, not weeks.",
+    text: "M&A runs on an impossible clock. Two companies, two sets of books, two versions of the truth. Convergence turns weeks of diligence into hours — and complexity into clarity.",
     chainGroup: "scene5",
     voiceSettings: SCENE5_VOICE_SETTINGS,
   },
