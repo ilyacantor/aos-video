@@ -1,4 +1,4 @@
-import { writeFileSync, mkdirSync } from "fs";
+import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 import "dotenv/config";
@@ -20,6 +20,42 @@ const SCENES: { id: string; text: string }[] = [
   {
     id: "scene2-solution",
     text: "That's what AOS changes. One layer that sits on top of everything you already have. No migration. No rip and replace. It connects, it resolves, and it gives your entire organization a shared language.",
+  },
+  {
+    id: "scene3a-mai",
+    text: "Every autonomOS deployment includes Mai — your customer success agent. Mai handles onboarding, training, and configuration changes, and knows the platform end-to-end. She also answers questions about your data, in natural language.",
+  },
+  {
+    id: "scene3b-dashboards",
+    text: "Dashboards are fully-featured and self-generating. Start from a preset, or spin one up on demand, in response to a natural language query — grounded in your live enterprise data.",
+  },
+  {
+    id: "scene4-knowledgegraph",
+    text: "For agents and humans to truly collaborate, they need more than just data—they need context. contextOS deploys Mai to scan surface-level relationships and work with your stakeholders to build a dynamic Knowledge Graph. This isn't just a database; it's a living network of people, assets, and concepts. By mapping these connections, Mai provides the semantic intelligence your enterprise needs to power autonomous agents and establish a single, context-aware source of truth.",
+  },
+  {
+    id: "scene5-title",
+    text: "M&A creates complexity. Convergence delivers clarity — in hours, not weeks.",
+  },
+  {
+    id: "scene5-combine",
+    text: "One unified financial picture across both companies.",
+  },
+  {
+    id: "scene5-qofe",
+    text: "Quality of earnings, automated — every adjustment flagged.",
+  },
+  {
+    id: "scene5-ebitda",
+    text: "Pro forma EBITDA with a transparent bridge to run-rate.",
+  },
+  {
+    id: "scene5-xsell",
+    text: "Cross-sell thesis, validated across both customer books.",
+  },
+  {
+    id: "scene5-backoffice",
+    text: "Backoffice overlap quantified across people and systems.",
   },
 ];
 
@@ -61,7 +97,13 @@ async function generate(scene: { id: string; text: string }) {
 }
 
 async function main() {
+  const force = process.argv.includes("--force");
   for (const scene of SCENES) {
+    const outPath = resolve(outDir, `${scene.id}.mp3`);
+    if (!force && existsSync(outPath)) {
+      console.log(`Skipping ${scene.id} (already exists, pass --force to regenerate)`);
+      continue;
+    }
     await generate(scene);
   }
   console.log("\nDone! Audio files in public/voiceover/");

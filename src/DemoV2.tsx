@@ -29,6 +29,19 @@ const C = {
 const FONT = `${fontFamily}, sans-serif`;
 
 // ═══════════════════════════════════════════════════════════
+// Scene Durations (seconds) — sized to voiceover lengths
+// Voiceovers: S0=2.85s, S1=10.79s, S2=12.88s, S3A=14.31s, S3B=10.66s, S4=29.73s, S5≈25s (target)
+// ═══════════════════════════════════════════════════════════
+const S0_DUR = 4;
+const S1_DUR = 12;
+const S2_DUR = 14;
+const S3A_DUR = 15;
+const S3B_DUR = 12;
+const S4_DUR = 31;
+const S5_DUR = 27; // Convergence: 7s title + 5 × 4s visuals
+const FADE = 0.3; // uniform end-of-scene fade-out
+
+// ═══════════════════════════════════════════════════════════
 // Helpers
 // ═══════════════════════════════════════════════════════════
 const anim = (frame: number, fps: number, delaySec: number) => {
@@ -55,6 +68,10 @@ const lerp = (
     extrapolateRight: "clamp",
   });
 
+// Uniform end-of-scene fade-out for consistent transitions
+const sceneFadeOut = (frame: number, fps: number, durSec: number) =>
+  lerp(frame, [(durSec - FADE) * fps, durSec * fps], [1, 0]);
+
 // ═══════════════════════════════════════════════════════════
 // Problem columns data
 // ═══════════════════════════════════════════════════════════
@@ -65,14 +82,6 @@ const COLUMNS = [
       { text: "900+ applications", highlight: " by the average enterprise (before agentic sprawl)" },
       { text: "71% are disconnected", highlight: "" },
       { text: "95% of IT leaders", highlight: " cite integration as the #1 barrier to AI adoption" },
-    ],
-  },
-  {
-    title: "Adaptation is Stalled",
-    bullets: [
-      { text: "Organizations constrained", highlight: " by decades-old record-keeping systems" },
-      { text: "Budgets allocated to maintenance,", highlight: " not innovation" },
-      { text: "Legacy architecture", highlight: " cannot support agentic AI" },
     ],
   },
   {
@@ -93,8 +102,8 @@ const Scene1Problems: React.FC = () => {
   const { fps } = useVideoConfig();
 
   const funnelIn = spring({ frame, fps, config: { damping: 200 } });
-  const colDelays = [1.5, 4.5, 7.5];
-  const fadeOutOpacity = lerp(frame, [11.5 * fps, 13 * fps], [1, 0]);
+  const colDelays = [1.5, 6];
+  const fadeOutOpacity = sceneFadeOut(frame, fps, S1_DUR);
 
   return (
     <AbsoluteFill
@@ -139,7 +148,7 @@ const Scene1Problems: React.FC = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          gap: 20,
+          gap: 50,
         }}
       >
         {COLUMNS.map((col, i) => {
@@ -152,17 +161,17 @@ const Scene1Problems: React.FC = () => {
                 transform: `translateX(${a.x}px)`,
                 background: C.cardBg,
                 border: `1px solid ${C.cardBorder}`,
-                borderTop: `3px solid ${C.orange}`,
-                borderRadius: 14,
-                padding: "18px 22px",
+                borderTop: `4px solid ${C.orange}`,
+                borderRadius: 16,
+                padding: "28px 32px",
               }}
             >
               <div
                 style={{
-                  fontSize: 40,
+                  fontSize: 50,
                   fontWeight: 600,
                   color: C.white,
-                  marginBottom: 10,
+                  marginBottom: 16,
                 }}
               >
                 {col.title}
@@ -171,17 +180,17 @@ const Scene1Problems: React.FC = () => {
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: 6,
+                  gap: 10,
                 }}
               >
                 {col.bullets.map((b, j) => (
                   <div
                     key={j}
                     style={{
-                      fontSize: 27,
+                      fontSize: 33,
                       lineHeight: 1.5,
                       color: C.caption,
-                      paddingLeft: 14,
+                      paddingLeft: 16,
                       fontWeight: 500,
                     }}
                   >
@@ -215,7 +224,8 @@ const Scene2Solution: React.FC = () => {
   const { fps } = useVideoConfig();
 
   const cardIn = spring({ frame, fps, config: { damping: 200 } });
-  const textDelays = [1.5, 3, 4.5, 5.5];
+  // Spread text delays across the 12.88s voiceover
+  const textDelays = [1.5, 4, 7, 10];
 
   // Image drifts in slowly from right and scales up as text appears
   const imgProgress = lerp(frame, [0, 7 * fps], [0, 1]);
@@ -228,7 +238,13 @@ const Scene2Solution: React.FC = () => {
   const driftY = Math.cos(frame * 0.006) * 4;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: C.bg, fontFamily: FONT }}>
+    <AbsoluteFill
+      style={{
+        backgroundColor: C.bg,
+        fontFamily: FONT,
+        opacity: sceneFadeOut(frame, fps, S2_DUR),
+      }}
+    >
       {/* ── Right side: A1 pipeline — floats in with 3D perspective ── */}
       <div
         style={{
@@ -357,7 +373,13 @@ const Scene0Title: React.FC = () => {
   const iconOpacity = lerp(frame, [0, 1 * fps], [0, 1]);
 
   return (
-    <AbsoluteFill style={{ backgroundColor: C.bg, fontFamily: FONT }}>
+    <AbsoluteFill
+      style={{
+        backgroundColor: C.bg,
+        fontFamily: FONT,
+        opacity: sceneFadeOut(frame, fps, S0_DUR),
+      }}
+    >
       {/* ── Title text ── */}
       <div
         style={{
@@ -425,17 +447,23 @@ const Scene3aNLQ: React.FC = () => {
   const modalIn = spring({ frame, fps, config: { damping: 200 } });
 
   // Each exchange: type query → pause → show answer
-  // Exchange timing: [typeStart, answerStart] in seconds
+  // Spread across the 14.31s Mai voiceover
   const exchanges = [
-    { typeAt: 0.8, answerAt: 2.8 },
-    { typeAt: 3.8, answerAt: 5.3 },
-    { typeAt: 6.3, answerAt: 7.8 },
+    { typeAt: 1.0, answerAt: 3.0 },
+    { typeAt: 5.0, answerAt: 7.0 },
+    { typeAt: 9.5, answerAt: 11.5 },
   ];
 
   const charsPerSec = 14;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: C.bg, fontFamily: FONT }}>
+    <AbsoluteFill
+      style={{
+        backgroundColor: C.bg,
+        fontFamily: FONT,
+        opacity: sceneFadeOut(frame, fps, S3A_DUR),
+      }}
+    >
       {/* ── Chat modal ── */}
       <div
         style={{
@@ -480,7 +508,7 @@ const Scene3aNLQ: React.FC = () => {
             M
           </div>
           <span style={{ fontSize: 18, fontWeight: 700, color: "#FFFFFF" }}>
-            Maestra
+            Mai
           </span>
           <span style={{ fontSize: 14, color: "#666", marginLeft: 4 }}>
             Meridian \u2192 Cascadia
@@ -661,7 +689,13 @@ const Scene3bDash: React.FC = () => {
   const driftY = Math.cos(frame * 0.005) * 3;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: C.bg, fontFamily: FONT }}>
+    <AbsoluteFill
+      style={{
+        backgroundColor: C.bg,
+        fontFamily: FONT,
+        opacity: sceneFadeOut(frame, fps, S3B_DUR),
+      }}
+    >
       <div
         style={{
           position: "absolute",
@@ -716,11 +750,13 @@ const KG_TEXT = [
 ];
 
 // Click sequence: [startSec, endSec, nodeId, cursorX%, cursorY%]
+// Spread across the 29.73s voiceover narrative; final 5s left for
+// the "single, context-aware source of truth" payoff on full graph.
 const KG_CLICKS: [number, number, string, number, number][] = [
-  [4, 6, "meridian", 44.2, 60.5],
-  [6.5, 8.5, "contract", 56.4, 36.7],
-  [9, 11, "engagement", 47, 39.6],
-  [11.5, 13.5, "owner", 31.8, 51.6],
+  [7, 9, "meridian", 44.2, 60.5],
+  [12, 14, "contract", 56.4, 36.7],
+  [17, 19, "engagement", 47, 39.6],
+  [22, 24, "owner", 31.8, 51.6],
 ];
 
 const Scene4KnowledgeGraph: React.FC = () => {
@@ -783,7 +819,12 @@ const Scene4KnowledgeGraph: React.FC = () => {
   const isClicking = activeClick && sec >= activeClick[0] && sec < activeClick[0] + 0.15;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: "#000000" }}>
+    <AbsoluteFill
+      style={{
+        backgroundColor: "#000000",
+        opacity: sceneFadeOut(frame, fps, S4_DUR),
+      }}
+    >
       <div
         style={{
           position: "absolute",
@@ -819,6 +860,24 @@ const Scene4KnowledgeGraph: React.FC = () => {
             style={{ width: 1920, height: 1080, border: "none", display: "block" }}
           />
         </div>
+      </div>
+
+      {/* ── contextOS sub-brand label (top-left) ── */}
+      <div
+        style={{
+          position: "absolute",
+          left: 60,
+          top: 44,
+          fontFamily: FONT,
+          fontSize: 44,
+          fontWeight: 600,
+          letterSpacing: "-0.01em",
+          opacity: lerp(frame, [0, 0.8 * fps], [0, 1]),
+          zIndex: 60,
+        }}
+      >
+        <span style={{ color: C.white }}>context</span>
+        <span style={{ color: C.teal }}>OS</span>
       </div>
 
       {cursorVisible && (
@@ -907,16 +966,428 @@ const Scene4KnowledgeGraph: React.FC = () => {
 };
 
 // ═══════════════════════════════════════════════════════════
-// Scene Durations
+// Scene 5: Convergence
+// 7s title card + 5 visuals × 4s each, alternating fly-in L/R
 // ═══════════════════════════════════════════════════════════
-const S0_DUR = 4;
-const S1_DUR = 14;
-const S2_DUR = 9;
-const S3A_DUR = 10;
-const S3B_DUR = 5;
-const S4_DUR = 25;
+// Crop ratios computed by scripts/detect-crop.mjs — tight dashboard bounds
+// (excludes cardBg wrapper and sidebar-text area where present).
+const CONV_VISUALS: {
+  src: string;
+  origW: number;
+  origH: number;
+  cropL: number;
+  cropR: number;
+  cropT: number;
+  cropB: number;
+  title: string;
+  body: string[];
+  from: "left" | "right";
+  fullscreen?: boolean;
+}[] = [
+  {
+    src: "combine_fs.png",
+    origW: 3220,
+    origH: 1738,
+    cropL: 0,
+    cropR: 0,
+    cropT: 0,
+    cropB: 0,
+    title: "",
+    body: [],
+    from: "left",
+  },
+  {
+    src: "qofe2.png",
+    origW: 1106,
+    origH: 752,
+    cropL: 0,
+    cropR: 0,
+    cropT: 0,
+    cropB: 0,
+    title: "QoE",
+    body: [
+      "Quality of earnings evaluates the sustainability, accuracy, and reliability of a company\u2019s reported earnings, primarily during mergers, acquisitions, or investments.",
+      "It helps stakeholders validate EBITDA, identify non-recurring items, assess cash flow, and uncover risks \u2014 ensuring a fair valuation and reducing overpayment risks.",
+    ],
+    from: "right",
+    fullscreen: true,
+  },
+  {
+    src: "ebitda2.png",
+    origW: 1037,
+    origH: 761,
+    cropL: 0,
+    cropR: 0,
+    cropT: 0,
+    cropB: 0,
+    title: "Proforma EBITDA",
+    body: [
+      "Reported EBITDA always needs adjustment \u2014 for one-time items, normalizations, run-rate corrections, and pro forma synergies.",
+      "Convergence builds the bridge automatically, entity-tagged with confidence scores distinguishing high-certainty items from estimates.",
+    ],
+    from: "left",
+    fullscreen: true,
+  },
+  {
+    src: "x-sell2.png",
+    origW: 1075,
+    origH: 723,
+    cropL: 0,
+    cropR: 0,
+    cropT: 0,
+    cropB: 0,
+    title: "Cross-sell and upsell roadmap",
+    body: [
+      "The cross-sell thesis is the core thesis of most deals \u2014 and the hardest to validate.",
+      "AOS.AI profiles 80% of the combined customer base automatically, then works with your sales team on the rest.",
+    ],
+    from: "right",
+    fullscreen: true,
+  },
+  {
+    src: "backoffice2.png",
+    origW: 1092,
+    origH: 716,
+    cropL: 0,
+    cropR: 0,
+    cropT: 0,
+    cropB: 0,
+    title: "Backoffice overlap assessment",
+    body: [
+      "Convergence produces overlap analysis automatically \u2014 across customers, vendors, IT, and personnel \u2014 with match confidence and combined financial impact.",
+    ],
+    from: "left",
+    fullscreen: true,
+  },
+];
 
-export const DEMO_V2_FRAMES = (S0_DUR + S1_DUR + S2_DUR + S3A_DUR + S3B_DUR + S4_DUR) * 30;
+const ConvergenceTitle: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const fadeIn = lerp(frame, [0, 0.4 * fps], [0, 1]);
+  const scale = lerp(frame, [0, 7 * fps], [1, 1.04]);
+  const fadeOut = lerp(frame, [(7 - FADE) * fps, 7 * fps], [1, 0]);
+
+  return (
+    <AbsoluteFill
+      style={{
+        backgroundColor: C.bg,
+        opacity: fadeOut,
+      }}
+    >
+      <AbsoluteFill style={{ opacity: fadeIn, transform: `scale(${scale})` }}>
+        <Img
+          src={staticFile("convergence-title2.png")}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+          }}
+        />
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
+const ConvergenceVisual: React.FC<{
+  src: string;
+  origW: number;
+  origH: number;
+  cropL: number;
+  cropR: number;
+  cropT: number;
+  cropB: number;
+  title: string;
+  body: string[];
+  from: "left" | "right";
+  fullscreen?: boolean;
+}> = ({ src, origW, origH, cropL, cropR, cropT, cropB, title, body, from, fullscreen }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  // Confident, fast 3D fly-in
+  const p = spring({
+    frame,
+    fps,
+    config: { damping: 14, stiffness: 180, mass: 0.7 },
+  });
+
+  const dir = from === "left" ? -1 : 1;
+  const x = interpolate(p, [0, 1], [dir * 700, 0]);
+  const rotY = interpolate(p, [0, 1], [dir * -22, 0]);
+  const scale = interpolate(p, [0, 1], [0.85, 1]);
+  const opacity = lerp(frame, [0, 0.25 * fps], [0, 1]);
+
+  // Subtle drift after settling
+  const drift = Math.sin(frame * 0.04) * 4;
+
+  // Per-segment fade-out in last 0.3s of the 4s slot
+  const fadeOut = lerp(frame, [(4 - FADE) * fps, 4 * fps], [1, 0]);
+
+  const hasText = body.length > 0;
+
+  // Target display width of the visible (cropped) dashboard area
+  const targetVisW = hasText ? 1000 : 1400;
+
+  // Scale the image so the visible-after-crop width equals targetVisW
+  const visibleFracW = 1 - cropL - cropR;
+  const visibleFracH = 1 - cropT - cropB;
+  const s = targetVisW / (origW * visibleFracW);
+  const imgW = origW * s;
+  const imgH = origH * s;
+  const displayVisW = targetVisW;
+  const displayVisH = origH * visibleFracH * s;
+  const offsetX = -cropL * imgW;
+  const offsetY = -cropT * imgH;
+
+  const shadow = `
+    ${interpolate(p, [0, 1], [40, 18])}px
+    ${interpolate(p, [0, 1], [25, 12])}px
+    ${interpolate(p, [0, 1], [70, 45])}px
+    rgba(0,0,0,0.45)
+  `;
+
+  if (fullscreen) {
+    return (
+      <AbsoluteFill
+        style={{
+          backgroundColor: C.bg,
+          opacity: fadeOut,
+        }}
+      >
+        {/* Full-bleed background image */}
+        <AbsoluteFill style={{ opacity }}>
+          <Img
+            src={staticFile(src)}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              display: "block",
+            }}
+          />
+        </AbsoluteFill>
+
+        {/* Transparent overlay text card */}
+        {hasText && (
+          <AbsoluteFill
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: from === "left" ? "flex-start" : "flex-end",
+              padding: "0 80px",
+            }}
+          >
+            <div
+              style={{
+                opacity,
+                transform: `translateX(${x + drift}px)`,
+                background: "rgba(47, 64, 80, 0.72)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+                border: `1px solid rgba(255,255,255,0.12)`,
+                borderTop: `4px solid ${C.orange}`,
+                borderRadius: 16,
+                padding: "40px 48px",
+                width: 650,
+                display: "flex",
+                flexDirection: "column",
+                gap: 20,
+                boxShadow: shadow,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 48,
+                  fontWeight: 600,
+                  color: C.white,
+                  lineHeight: 1.15,
+                }}
+              >
+                {title}
+              </div>
+              <div
+                style={{
+                  width: 50,
+                  height: 3,
+                  borderRadius: 2,
+                  background: C.teal,
+                  opacity: 0.6,
+                }}
+              />
+              {body.map((line, i) => (
+                <div
+                  key={i}
+                  style={{
+                    fontSize: 28,
+                    fontWeight: 500,
+                    lineHeight: 1.5,
+                    color: C.white,
+                  }}
+                >
+                  {line}
+                </div>
+              ))}
+            </div>
+          </AbsoluteFill>
+        )}
+
+      </AbsoluteFill>
+    );
+  }
+
+  return (
+    <AbsoluteFill
+      style={{
+        backgroundColor: C.bg,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        perspective: 1400,
+        opacity: fadeOut,
+      }}
+    >
+      <div
+        style={{
+          opacity,
+          transform: `
+            translateX(${x + drift}px)
+            scale(${scale})
+            rotateY(${rotY}deg)
+          `,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 40,
+        }}
+      >
+        {/* Tight-cropped dashboard screenshot */}
+        <div
+          style={{
+            width: displayVisW,
+            height: displayVisH,
+            overflow: "hidden",
+            position: "relative",
+            borderRadius: 14,
+            border: `1px solid ${C.cardBorder}`,
+            boxShadow: shadow,
+          }}
+        >
+          <Img
+            src={staticFile(src)}
+            style={{
+              position: "absolute",
+              width: imgW,
+              height: imgH,
+              left: offsetX,
+              top: offsetY,
+              display: "block",
+            }}
+          />
+        </div>
+
+        {/* Text card */}
+        {hasText && (
+          <div
+            style={{
+              background: C.cardBg,
+              border: `1px solid ${C.cardBorder}`,
+              borderTop: `4px solid ${C.orange}`,
+              borderRadius: 16,
+              padding: "40px 48px",
+              width: 650,
+              display: "flex",
+              flexDirection: "column",
+              gap: 20,
+              boxShadow: shadow,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 48,
+                fontWeight: 600,
+                color: C.white,
+                lineHeight: 1.15,
+              }}
+            >
+              {title}
+            </div>
+            <div
+              style={{
+                width: 50,
+                height: 3,
+                borderRadius: 2,
+                background: C.teal,
+                opacity: 0.6,
+              }}
+            />
+            {body.map((line, i) => (
+              <div
+                key={i}
+                style={{
+                  fontSize: 28,
+                  fontWeight: 500,
+                  lineHeight: 1.5,
+                  color: C.caption,
+                }}
+              >
+                {line}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+const Scene5Convergence: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  return (
+    <AbsoluteFill
+      style={{
+        backgroundColor: C.bg,
+        fontFamily: FONT,
+        opacity: sceneFadeOut(frame, fps, S5_DUR),
+      }}
+    >
+      <Sequence from={0} durationInFrames={7 * 30} premountFor={15}>
+        <ConvergenceTitle />
+      </Sequence>
+      {CONV_VISUALS.map((v, i) => (
+        <Sequence
+          key={v.src}
+          from={(7 + i * 4) * 30}
+          durationInFrames={4 * 30}
+          premountFor={15}
+        >
+          <ConvergenceVisual
+            src={v.src}
+            origW={v.origW}
+            origH={v.origH}
+            cropL={v.cropL}
+            cropR={v.cropR}
+            cropT={v.cropT}
+            cropB={v.cropB}
+            title={v.title}
+            body={v.body}
+            from={v.from}
+            fullscreen={v.fullscreen}
+          />
+        </Sequence>
+      ))}
+    </AbsoluteFill>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════
+// Total duration (scene durations are declared at top of file)
+// ═══════════════════════════════════════════════════════════
+export const DEMO_V2_FRAMES = (S0_DUR + S1_DUR + S2_DUR + S3A_DUR + S3B_DUR + S4_DUR + S5_DUR) * 30;
 
 // ═══════════════════════════════════════════════════════════
 // Main Composition
@@ -928,7 +1399,8 @@ export const DemoV2: React.FC = () => {
   const S3A = S3A_DUR * 30;
   const S3B = S3B_DUR * 30;
   const S4 = S4_DUR * 30;
-  const AFTER_S0 = S1 + S2 + S3A + S3B + S4;
+  const S5 = S5_DUR * 30;
+  const AFTER_S0 = S1 + S2 + S3A + S3B + S4 + S5;
 
   return (
     <AbsoluteFill style={{ backgroundColor: C.bg }}>
@@ -956,6 +1428,10 @@ export const DemoV2: React.FC = () => {
         <Scene4KnowledgeGraph />
       </Sequence>
 
+      <Sequence from={S0 + S1 + S2 + S3A + S3B + S4} durationInFrames={S5} premountFor={30}>
+        <Scene5Convergence />
+      </Sequence>
+
       {/* ── Logo watermark — visible after Scene 0 ── */}
       <Sequence from={S0} durationInFrames={AFTER_S0} premountFor={0}>
         <Img
@@ -981,9 +1457,44 @@ export const DemoV2: React.FC = () => {
       <Sequence from={S0 + S1} durationInFrames={S2}>
         <Audio src={staticFile("voiceover/scene2-solution.mp3")} volume={0.9} />
       </Sequence>
+      <Sequence from={S0 + S1 + S2} durationInFrames={S3A}>
+        <Audio src={staticFile("voiceover/scene3a-mai.mp3")} volume={0.9} />
+      </Sequence>
+      <Sequence from={S0 + S1 + S2 + S3A} durationInFrames={S3B}>
+        <Audio src={staticFile("voiceover/scene3b-dashboards.mp3")} volume={0.9} />
+      </Sequence>
       <Sequence from={S0 + S1 + S2 + S3A + S3B} durationInFrames={S4}>
         <Audio src={staticFile("voiceover/scene4-knowledgegraph.mp3")} volume={0.9} />
       </Sequence>
+
+      {/* ── Scene 5 per-slide voiceovers ── */}
+      {(() => {
+        const S5_BASE = S0 + S1 + S2 + S3A + S3B + S4;
+        const TITLE = 7 * 30;
+        const SLIDE = 4 * 30;
+        return (
+          <>
+            <Sequence from={S5_BASE} durationInFrames={TITLE}>
+              <Audio src={staticFile("voiceover/scene5-title.mp3")} volume={0.9} />
+            </Sequence>
+            <Sequence from={S5_BASE + TITLE} durationInFrames={SLIDE}>
+              <Audio src={staticFile("voiceover/scene5-combine.mp3")} volume={0.9} />
+            </Sequence>
+            <Sequence from={S5_BASE + TITLE + SLIDE} durationInFrames={SLIDE}>
+              <Audio src={staticFile("voiceover/scene5-qofe.mp3")} volume={0.9} />
+            </Sequence>
+            <Sequence from={S5_BASE + TITLE + 2 * SLIDE} durationInFrames={SLIDE}>
+              <Audio src={staticFile("voiceover/scene5-ebitda.mp3")} volume={0.9} />
+            </Sequence>
+            <Sequence from={S5_BASE + TITLE + 3 * SLIDE} durationInFrames={SLIDE}>
+              <Audio src={staticFile("voiceover/scene5-xsell.mp3")} volume={0.9} />
+            </Sequence>
+            <Sequence from={S5_BASE + TITLE + 4 * SLIDE} durationInFrames={SLIDE}>
+              <Audio src={staticFile("voiceover/scene5-backoffice.mp3")} volume={0.9} />
+            </Sequence>
+          </>
+        );
+      })()}
     </AbsoluteFill>
   );
 };
