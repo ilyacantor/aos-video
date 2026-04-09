@@ -12,14 +12,6 @@ export const RemotionRoot: React.FC = () => {
   return (
     <>
       <Composition
-        id="DemoV3"
-        component={DemoV3}
-        durationInFrames={DEMO_V3_FRAMES}
-        fps={30}
-        width={1920}
-        height={1080}
-      />
-      <Composition
         id="DemoV2"
         component={DemoV2}
         durationInFrames={DEMO_V2_FRAMES}
