@@ -969,95 +969,55 @@ const Scene4KnowledgeGraph: React.FC = () => {
 // Scene 5: Convergence
 // 7s title card + 5 visuals × 4s each, alternating fly-in L/R
 // ═══════════════════════════════════════════════════════════
-// Crop ratios computed by scripts/detect-crop.mjs — tight dashboard bounds
-// (excludes cardBg wrapper and sidebar-text area where present).
+// All scene-5 visuals are full-bleed backgrounds with an optional
+// translucent overlay text card. The `from` field picks the side of the
+// frame the card sits on (left/right).
 const CONV_VISUALS: {
   src: string;
-  origW: number;
-  origH: number;
-  cropL: number;
-  cropR: number;
-  cropT: number;
-  cropB: number;
   title: string;
   body: string[];
   from: "left" | "right";
-  fullscreen?: boolean;
 }[] = [
   {
     src: "combine_fs.png",
-    origW: 3220,
-    origH: 1738,
-    cropL: 0,
-    cropR: 0,
-    cropT: 0,
-    cropB: 0,
     title: "",
     body: [],
     from: "left",
   },
   {
     src: "qofe2.png",
-    origW: 1106,
-    origH: 752,
-    cropL: 0,
-    cropR: 0,
-    cropT: 0,
-    cropB: 0,
     title: "QoE",
     body: [
       "Quality of earnings evaluates the sustainability, accuracy, and reliability of a company\u2019s reported earnings, primarily during mergers, acquisitions, or investments.",
       "It helps stakeholders validate EBITDA, identify non-recurring items, assess cash flow, and uncover risks \u2014 ensuring a fair valuation and reducing overpayment risks.",
     ],
     from: "right",
-    fullscreen: true,
   },
   {
     src: "ebitda2.png",
-    origW: 1037,
-    origH: 761,
-    cropL: 0,
-    cropR: 0,
-    cropT: 0,
-    cropB: 0,
     title: "Proforma EBITDA",
     body: [
       "Reported EBITDA always needs adjustment \u2014 for one-time items, normalizations, run-rate corrections, and pro forma synergies.",
       "Convergence builds the bridge automatically, entity-tagged with confidence scores distinguishing high-certainty items from estimates.",
     ],
     from: "left",
-    fullscreen: true,
   },
   {
     src: "x-sell2.png",
-    origW: 1075,
-    origH: 723,
-    cropL: 0,
-    cropR: 0,
-    cropT: 0,
-    cropB: 0,
     title: "Cross-sell and upsell roadmap",
     body: [
       "The cross-sell thesis is the core thesis of most deals \u2014 and the hardest to validate.",
       "AOS.AI profiles 80% of the combined customer base automatically, then works with your sales team on the rest.",
     ],
     from: "right",
-    fullscreen: true,
   },
   {
     src: "backoffice2.png",
-    origW: 1092,
-    origH: 716,
-    cropL: 0,
-    cropR: 0,
-    cropT: 0,
-    cropB: 0,
     title: "Backoffice overlap assessment",
     body: [
       "Convergence produces overlap analysis automatically \u2014 across customers, vendors, IT, and personnel \u2014 with match confidence and combined financial impact.",
     ],
     from: "left",
-    fullscreen: true,
   },
 ];
 
@@ -1066,8 +1026,9 @@ const ConvergenceTitle: React.FC = () => {
   const { fps } = useVideoConfig();
 
   const fadeIn = lerp(frame, [0, 0.4 * fps], [0, 1]);
-  const scale = lerp(frame, [0, 7 * fps], [1, 1.04]);
-  const fadeOut = lerp(frame, [(7 - FADE) * fps, 7 * fps], [1, 0]);
+  const scale = lerp(frame, [0, 7.5 * fps], [1, 1.04]);
+  // Fades out over 0.5s overlapping with slide 0's fade-in (crossfade)
+  const fadeOut = lerp(frame, [7 * fps, 7.5 * fps], [1, 0]);
 
   return (
     <AbsoluteFill
@@ -1093,207 +1054,68 @@ const ConvergenceTitle: React.FC = () => {
 
 const ConvergenceVisual: React.FC<{
   src: string;
-  origW: number;
-  origH: number;
-  cropL: number;
-  cropR: number;
-  cropT: number;
-  cropB: number;
   title: string;
   body: string[];
   from: "left" | "right";
-  fullscreen?: boolean;
-}> = ({ src, origW, origH, cropL, cropR, cropT, cropB, title, body, from, fullscreen }) => {
+  isLast?: boolean;
+}> = ({ src, title, body, from, isLast }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Confident, fast 3D fly-in
-  const p = spring({
-    frame,
-    fps,
-    config: { damping: 14, stiffness: 180, mass: 0.7 },
-  });
+  // Crossfade: fade in over first 0.5s; fade out over the 0.5s overlap window
+  // (last 0.5s of the extended slot). Last slide skips fadeOut — the parent
+  // Scene5Convergence handles the end-of-scene fade.
+  const fadeIn = lerp(frame, [0, 0.5 * fps], [0, 1]);
+  const fadeOut = isLast
+    ? 1
+    : lerp(frame, [4 * fps, 4.5 * fps], [1, 0]);
+  const opacity = Math.min(fadeIn, fadeOut);
 
-  const dir = from === "left" ? -1 : 1;
-  const x = interpolate(p, [0, 1], [dir * 700, 0]);
-  const rotY = interpolate(p, [0, 1], [dir * -22, 0]);
-  const scale = interpolate(p, [0, 1], [0.85, 1]);
-  const opacity = lerp(frame, [0, 0.25 * fps], [0, 1]);
+  // Gentle Ken Burns zoom on background (1.00 → 1.04 over 4s)
+  const bgScale = lerp(frame, [0, 4 * fps], [1, 1.04]);
 
-  // Subtle drift after settling
-  const drift = Math.sin(frame * 0.04) * 4;
-
-  // Per-segment fade-out in last 0.3s of the 4s slot
-  const fadeOut = lerp(frame, [(4 - FADE) * fps, 4 * fps], [1, 0]);
+  // Text card subtle slide-up entrance
+  const cardY = lerp(frame, [0, 0.5 * fps], [12, 0]);
 
   const hasText = body.length > 0;
-
-  // Target display width of the visible (cropped) dashboard area
-  const targetVisW = hasText ? 1000 : 1400;
-
-  // Scale the image so the visible-after-crop width equals targetVisW
-  const visibleFracW = 1 - cropL - cropR;
-  const visibleFracH = 1 - cropT - cropB;
-  const s = targetVisW / (origW * visibleFracW);
-  const imgW = origW * s;
-  const imgH = origH * s;
-  const displayVisW = targetVisW;
-  const displayVisH = origH * visibleFracH * s;
-  const offsetX = -cropL * imgW;
-  const offsetY = -cropT * imgH;
-
-  const shadow = `
-    ${interpolate(p, [0, 1], [40, 18])}px
-    ${interpolate(p, [0, 1], [25, 12])}px
-    ${interpolate(p, [0, 1], [70, 45])}px
-    rgba(0,0,0,0.45)
-  `;
-
-  if (fullscreen) {
-    return (
-      <AbsoluteFill
-        style={{
-          backgroundColor: C.bg,
-          opacity: fadeOut,
-        }}
-      >
-        {/* Full-bleed background image */}
-        <AbsoluteFill style={{ opacity }}>
-          <Img
-            src={staticFile(src)}
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
-              display: "block",
-            }}
-          />
-        </AbsoluteFill>
-
-        {/* Transparent overlay text card */}
-        {hasText && (
-          <AbsoluteFill
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: from === "left" ? "flex-start" : "flex-end",
-              padding: "0 80px",
-            }}
-          >
-            <div
-              style={{
-                opacity,
-                transform: `translateX(${x + drift}px)`,
-                background: "rgba(47, 64, 80, 0.72)",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
-                border: `1px solid rgba(255,255,255,0.12)`,
-                borderTop: `4px solid ${C.orange}`,
-                borderRadius: 16,
-                padding: "40px 48px",
-                width: 650,
-                display: "flex",
-                flexDirection: "column",
-                gap: 20,
-                boxShadow: shadow,
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 48,
-                  fontWeight: 600,
-                  color: C.white,
-                  lineHeight: 1.15,
-                }}
-              >
-                {title}
-              </div>
-              <div
-                style={{
-                  width: 50,
-                  height: 3,
-                  borderRadius: 2,
-                  background: C.teal,
-                  opacity: 0.6,
-                }}
-              />
-              {body.map((line, i) => (
-                <div
-                  key={i}
-                  style={{
-                    fontSize: 28,
-                    fontWeight: 500,
-                    lineHeight: 1.5,
-                    color: C.white,
-                  }}
-                >
-                  {line}
-                </div>
-              ))}
-            </div>
-          </AbsoluteFill>
-        )}
-
-      </AbsoluteFill>
-    );
-  }
 
   return (
     <AbsoluteFill
       style={{
         backgroundColor: C.bg,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        perspective: 1400,
-        opacity: fadeOut,
+        opacity,
       }}
     >
-      <div
-        style={{
-          opacity,
-          transform: `
-            translateX(${x + drift}px)
-            scale(${scale})
-            rotateY(${rotY}deg)
-          `,
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 40,
-        }}
-      >
-        {/* Tight-cropped dashboard screenshot */}
-        <div
+      {/* Full-bleed background image with subtle zoom */}
+      <AbsoluteFill style={{ transform: `scale(${bgScale})` }}>
+        <Img
+          src={staticFile(src)}
           style={{
-            width: displayVisW,
-            height: displayVisH,
-            overflow: "hidden",
-            position: "relative",
-            borderRadius: 14,
-            border: `1px solid ${C.cardBorder}`,
-            boxShadow: shadow,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+          }}
+        />
+      </AbsoluteFill>
+
+      {/* Transparent overlay text card */}
+      {hasText && (
+        <AbsoluteFill
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: from === "left" ? "flex-start" : "flex-end",
+            padding: "0 80px",
           }}
         >
-          <Img
-            src={staticFile(src)}
-            style={{
-              position: "absolute",
-              width: imgW,
-              height: imgH,
-              left: offsetX,
-              top: offsetY,
-              display: "block",
-            }}
-          />
-        </div>
-
-        {/* Text card */}
-        {hasText && (
           <div
             style={{
-              background: C.cardBg,
-              border: `1px solid ${C.cardBorder}`,
+              transform: `translateY(${cardY}px)`,
+              background: "rgba(47, 64, 80, 0.72)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              border: `1px solid rgba(255,255,255,0.12)`,
               borderTop: `4px solid ${C.orange}`,
               borderRadius: 16,
               padding: "40px 48px",
@@ -1301,7 +1123,7 @@ const ConvergenceVisual: React.FC<{
               display: "flex",
               flexDirection: "column",
               gap: 20,
-              boxShadow: shadow,
+              boxShadow: "0 18px 45px rgba(0,0,0,0.45)",
             }}
           >
             <div
@@ -1330,15 +1152,15 @@ const ConvergenceVisual: React.FC<{
                   fontSize: 28,
                   fontWeight: 500,
                   lineHeight: 1.5,
-                  color: C.caption,
+                  color: C.white,
                 }}
               >
                 {line}
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </AbsoluteFill>
+      )}
     </AbsoluteFill>
   );
 };
@@ -1346,6 +1168,11 @@ const ConvergenceVisual: React.FC<{
 const Scene5Convergence: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+
+  // 0.5s crossfade overlap: each sequence (except the last) is extended by
+  // OVERLAP frames past its natural end so the next slide's fade-in runs
+  // concurrently with this slide's fade-out.
+  const OVERLAP = 15;
 
   return (
     <AbsoluteFill
@@ -1355,31 +1182,28 @@ const Scene5Convergence: React.FC = () => {
         opacity: sceneFadeOut(frame, fps, S5_DUR),
       }}
     >
-      <Sequence from={0} durationInFrames={7 * 30} premountFor={15}>
+      <Sequence from={0} durationInFrames={7 * 30 + OVERLAP} premountFor={15}>
         <ConvergenceTitle />
       </Sequence>
-      {CONV_VISUALS.map((v, i) => (
-        <Sequence
-          key={v.src}
-          from={(7 + i * 4) * 30}
-          durationInFrames={4 * 30}
-          premountFor={15}
-        >
-          <ConvergenceVisual
-            src={v.src}
-            origW={v.origW}
-            origH={v.origH}
-            cropL={v.cropL}
-            cropR={v.cropR}
-            cropT={v.cropT}
-            cropB={v.cropB}
-            title={v.title}
-            body={v.body}
-            from={v.from}
-            fullscreen={v.fullscreen}
-          />
-        </Sequence>
-      ))}
+      {CONV_VISUALS.map((v, i) => {
+        const isLast = i === CONV_VISUALS.length - 1;
+        return (
+          <Sequence
+            key={v.src}
+            from={(7 + i * 4) * 30}
+            durationInFrames={isLast ? 4 * 30 : 4 * 30 + OVERLAP}
+            premountFor={15}
+          >
+            <ConvergenceVisual
+              src={v.src}
+              title={v.title}
+              body={v.body}
+              from={v.from}
+              isLast={isLast}
+            />
+          </Sequence>
+        );
+      })}
     </AbsoluteFill>
   );
 };
