@@ -3,4 +3,5 @@ dist
 .DS_Store
 .env
 
-# Keep out/ tracked — Render serves the MP4 from it
+# Track index.html but ignore rendered videos
+out/*.mp4
