@@ -39,11 +39,13 @@ const FONT = `${fontFamily}, sans-serif`;
 // ═══════════════════════════════════════════════════════════
 const S0_DUR = 4;
 const S1_DUR = 12;
-const S2_DUR = 37; // "Introducing AOS": 5-stage zoom walkthrough of a1.jpeg
-const S3A_DUR = 21; // Mai: margin Q&A (first chat) + config changes (second chat)
-const S3B_DUR = 12;
+const S2I_DUR = 14; // Establishing shot: full image + card with text on left
+const S2_DUR = 41; // 5-stage zoom walkthrough (longer discover + 1s pauses)
+const S3A_DUR = 28; // Mai: Q&A (first chat) + config changes (second chat)
 const S4_DUR = 31;
-const S5_DUR = 31; // Convergence: 11s title + 5 × 4s visuals
+const S5I_DUR = 11; // Transition text: single → multi-entity intro
+const S5_DUR = 35; // Convergence: 11s title + 5 × 5s visuals (was 4s)
+const S6_DUR = 8; // Closing card
 const FADE = 0.3; // uniform end-of-scene fade-out
 
 // ═══════════════════════════════════════════════════════════
@@ -215,6 +217,137 @@ const Scene1Problems: React.FC = () => {
 };
 
 // ═══════════════════════════════════════════════════════════
+// Scene 2 Intro: Establishing shot — full a1.jpeg on right, card on left
+// ═══════════════════════════════════════════════════════════
+const AOS_TEXT = [
+  "One layer that sits on top of everything you already have.",
+  "It doesn\u2019t move data. It doesn\u2019t replace systems.",
+  "It just connects to what\u2019s already there.",
+  "And understands what\u2019s already there.",
+];
+
+const Scene2Intro: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const cardIn = spring({ frame, fps, config: { damping: 200 } });
+  const textDelays = [1.5, 4, 7, 10];
+
+  const imgProgress = lerp(frame, [0, 7 * fps], [0, 1]);
+  const imgX = interpolate(imgProgress, [0, 1], [120, 0]);
+  const imgScale = interpolate(imgProgress, [0, 1], [0.88, 1]);
+  const imgOpacity = lerp(frame, [0, 1.2 * fps], [0, 1]);
+
+  const drift = Math.sin(frame * 0.008) * 6;
+  const driftY = Math.cos(frame * 0.006) * 4;
+
+  return (
+    <AbsoluteFill
+      style={{
+        backgroundColor: C.bg,
+        fontFamily: FONT,
+        opacity: sceneFadeOut(frame, fps, S2I_DUR),
+      }}
+    >
+      {/* ── Right side: A1 pipeline ── */}
+      <div
+        style={{
+          position: "absolute",
+          right: 0,
+          top: 0,
+          width: "72%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          perspective: 1200,
+        }}
+      >
+        <div
+          style={{
+            opacity: imgOpacity,
+            transform: `
+              translateX(${imgX + drift}px)
+              translateY(${driftY}px)
+              scale(${imgScale})
+              rotateY(${interpolate(imgProgress, [0, 1], [-12, -4])}deg)
+              rotateX(${interpolate(imgProgress, [0, 1], [6, 2])}deg)
+            `,
+            boxShadow: `
+              ${interpolate(imgProgress, [0, 1], [30, 15])}px
+              ${interpolate(imgProgress, [0, 1], [20, 10])}px
+              ${interpolate(imgProgress, [0, 1], [60, 40])}px
+              rgba(0,0,0,0.4)
+            `,
+            borderRadius: 10,
+            overflow: "hidden",
+          }}
+        >
+          <Img
+            src={staticFile("a1.jpeg")}
+            style={{ width: 1200, objectFit: "contain", display: "block" }}
+          />
+        </div>
+      </div>
+
+      {/* ── Left side: card ── */}
+      <div
+        style={{
+          position: "absolute",
+          left: 60,
+          top: "50%",
+          transform: `translateY(-50%) translateX(${interpolate(cardIn, [0, 1], [-20, 0])}px)`,
+          width: "24%",
+          background: C.cardBg,
+          border: `1px solid ${C.cardBorder}`,
+          borderTop: `3px solid ${C.orange}`,
+          borderRadius: 14,
+          padding: "24px 22px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 18,
+          opacity: cardIn,
+        }}
+      >
+        <div style={{ fontSize: 37, fontWeight: 600, lineHeight: 1.2 }}>
+          <span style={{ color: C.white }}>Introducing</span>
+          <br />
+          <span style={{ color: C.white }}>autonom</span>
+          <span style={{ color: C.teal }}>OS</span>
+        </div>
+        <div
+          style={{
+            width: 50,
+            height: 3,
+            borderRadius: 2,
+            background: C.teal,
+            opacity: 0.6,
+          }}
+        />
+        {AOS_TEXT.map((line, i) => {
+          const a = anim(frame, fps, textDelays[i]);
+          return (
+            <div
+              key={i}
+              style={{
+                fontSize: 26,
+                fontWeight: 500,
+                lineHeight: 1.5,
+                color: i >= 2 ? C.teal : C.white,
+                opacity: a.opacity,
+                transform: `translateY(${a.y}px)`,
+              }}
+            >
+              {line}
+            </div>
+          );
+        })}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════
 // Scene 2: Introducing AOS — 5-stage zoom walkthrough of a1.jpeg
 // ═══════════════════════════════════════════════════════════
 // Stage x-fractions across the rendered 1920-wide image:
@@ -224,24 +357,26 @@ const Scene1Problems: React.FC = () => {
 //   Stage 5   (ask):      fx ≈ 0.90  →  tx = (0.5 - 0.90) * 1920 * scale
 // VO timing (measured):
 //   discover 7.18s · connect 6.11s · resolve 6.82s · ask 13.35s
-// Slot plan (with 0.5s establishing wide + 0.5s crossfades between stages):
-//   0.0-1.5s  establish (wide, title overlay)
-//   1.5-8.5s  stages 1+2 (discover)          VO 1.5s-8.68s
-//   8.5-15s   stage 3 (connect)              VO 8.5s-14.61s
-//   15-21.5s  stage 4 (resolve)              VO 15s-21.82s
-//   21.5-37s  stage 5 (ask)                  VO 21.5s-34.85s
+// Slot plan (3s cinematic zoom, 1s pauses after discover & resolve):
+//   0.0-3.0s  cinematic zoom into stages 1+2
+//   1.5-11.5s stages 1+2 (discover ~10s)     VO 1.5s
+//   11.5-12.5s pause
+//   12.5-18.5s stage 3 (connect ~6s)         VO 12.5s
+//   19.0-25.7s stage 4 (resolve ~6.7s)       VO 19.0s
+//   25.7-27.0s pause
+//   27.0-39.2s stage 5 (ask ~12.2s)          VO 27.0s
 const Scene2Solution: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = (sec: number) => sec * fps;
 
-  // Zoom + pan keyframes — 0.5s eased transitions between holds.
+  // Zoom + pan keyframes — slow cinematic zoom-in, then 0.5s pans between stages.
   const kfTimes = [
-    t(0),    t(0.5),  t(1.5),  t(8.0),
-    t(9.0),  t(14.5), t(15.5), t(21.0),
-    t(22.0), t(37.0),
+    t(0),    t(3.0),  t(3.5),  t(12.0),
+    t(13.0), t(18.5), t(19.5), t(26.5),
+    t(27.5), t(41.0),
   ];
-  const kfScale = [1.0, 1.0, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9];
+  const kfScale = [1.0, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9];
   // tx for each hold position (scale = 1.9):
   //   wide       : 0
   //   stages 1+2 : (0.5 - 0.20) * 1920 * 1.9 =  1094.4
@@ -249,7 +384,7 @@ const Scene2Solution: React.FC = () => {
   //   stage 4    : (0.5 - 0.70) * 1920 * 1.9 =  -729.6
   //   stage 5    : (0.5 - 0.90) * 1920 * 1.9 = -1459.2
   const kfTx = [
-    0, 0, 1094.4, 1094.4,
+    0, 1094.4, 1094.4, 1094.4,
     0, 0,
     -729.6, -729.6,
     -1459.2, -1459.2,
@@ -264,14 +399,6 @@ const Scene2Solution: React.FC = () => {
     extrapolateRight: "clamp",
   });
 
-  // "Introducing autonomOS" title overlay — visible only during the
-  // establishing wide shot (0-1.5s).
-  const titleOpacity = interpolate(
-    frame,
-    [0, t(0.3), t(1.0), t(1.5)],
-    [0, 1, 1, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
-  );
 
   return (
     <AbsoluteFill
@@ -299,26 +426,6 @@ const Scene2Solution: React.FC = () => {
         </div>
       </AbsoluteFill>
 
-      {/* ── Title overlay (only during establishing wide) ── */}
-      <AbsoluteFill
-        style={{ opacity: titleOpacity, pointerEvents: "none" }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            left: 60,
-            top: 60,
-            fontSize: 52,
-            fontWeight: 700,
-            lineHeight: 1.15,
-            textShadow: "0 2px 12px rgba(0,0,0,0.75)",
-          }}
-        >
-          <span style={{ color: C.white }}>Introducing </span>
-          <span style={{ color: C.white }}>autonom</span>
-          <span style={{ color: C.teal }}>OS</span>
-        </div>
-      </AbsoluteFill>
     </AbsoluteFill>
   );
 };
@@ -886,81 +993,6 @@ const Scene3aNLQ: React.FC = () => {
 };
 
 // ═══════════════════════════════════════════════════════════
-// Scene 3b: Dashboard — flies in from top right with 3D
-// ═══════════════════════════════════════════════════════════
-const Scene3bDash: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  const flyIn = spring({
-    frame: frame - 0.2 * fps,
-    fps,
-    config: { damping: 18, stiffness: 60, mass: 1.5 },
-  });
-
-  const x = interpolate(flyIn, [0, 1], [600, 0]);
-  const y = interpolate(flyIn, [0, 1], [-400, 0]);
-  const rotX = interpolate(flyIn, [0, 1], [-20, 3]);
-  const rotY = interpolate(flyIn, [0, 1], [25, -4]);
-  const scale = interpolate(flyIn, [0, 1], [0.6, 1]);
-
-  // Subtle float after settling
-  const drift = Math.sin(frame * 0.007) * 5;
-  const driftY = Math.cos(frame * 0.005) * 3;
-
-  return (
-    <AbsoluteFill
-      style={{
-        backgroundColor: C.bg,
-        fontFamily: FONT,
-        opacity: sceneFadeOut(frame, fps, S3B_DUR),
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          perspective: 1200,
-        }}
-      >
-        <div
-          style={{
-            transform: `
-              translateX(${x + drift}px)
-              translateY(${y + driftY}px)
-              scale(${scale})
-              rotateX(${rotX}deg)
-              rotateY(${rotY}deg)
-            `,
-            boxShadow: `
-              ${interpolate(flyIn, [0, 1], [40, 15])}px
-              ${interpolate(flyIn, [0, 1], [-30, 10])}px
-              ${interpolate(flyIn, [0, 1], [80, 40])}px
-              rgba(0,0,0,0.5)
-            `,
-            borderRadius: 12,
-            overflow: "hidden",
-            opacity: flyIn,
-          }}
-        >
-          <Img
-            src={staticFile("dash.png")}
-            style={{
-              width: 1500,
-              objectFit: "contain",
-              display: "block",
-            }}
-          />
-        </div>
-      </div>
-    </AbsoluteFill>
-  );
-};
-
-// ═══════════════════════════════════════════════════════════
 // Scene 4: Knowledge Graph — 3D zoom + frame-synced clicks
 // ═══════════════════════════════════════════════════════════
 const KG_TEXT = [
@@ -1215,7 +1247,7 @@ const CONV_VISUALS: {
   },
   {
     src: "ebitda2.png",
-    title: "Proforma EBITDA",
+    title: "Proforma ebitda",
     body: [
       "Reported EBITDA always needs adjustment \u2014 for one-time items, normalizations, run-rate corrections, and pro forma synergies.",
       "Convergence builds the bridge automatically, entity-tagged with confidence scores distinguishing high-certainty items from estimates.",
@@ -1288,11 +1320,11 @@ const ConvergenceVisual: React.FC<{
   const fadeIn = lerp(frame, [0, 0.5 * fps], [0, 1]);
   const fadeOut = isLast
     ? 1
-    : lerp(frame, [4 * fps, 4.5 * fps], [1, 0]);
+    : lerp(frame, [5 * fps, 5.5 * fps], [1, 0]);
   const opacity = Math.min(fadeIn, fadeOut);
 
-  // Gentle Ken Burns zoom on background (1.00 → 1.04 over 4s)
-  const bgScale = lerp(frame, [0, 4 * fps], [1, 1.04]);
+  // Gentle Ken Burns zoom on background (1.00 → 1.04 over 5s)
+  const bgScale = lerp(frame, [0, 5 * fps], [1, 1.04]);
 
   // Text card subtle slide-up entrance
   const cardY = lerp(frame, [0, 0.5 * fps], [12, 0]);
@@ -1385,6 +1417,60 @@ const ConvergenceVisual: React.FC<{
   );
 };
 
+// ═══════════════════════════════════════════════════════════
+// Scene 5 Intro: Transition text — single → multi-entity
+// ═══════════════════════════════════════════════════════════
+const Scene5Intro: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const line1 = anim(frame, fps, 0.3);
+  const line2 = anim(frame, fps, 2.5);
+
+  return (
+    <AbsoluteFill
+      style={{
+        backgroundColor: C.bg,
+        fontFamily: FONT,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        opacity: sceneFadeOut(frame, fps, S5I_DUR),
+      }}
+    >
+      <div style={{ maxWidth: 1100, textAlign: "center" }}>
+        <div
+          style={{
+            fontSize: 48,
+            fontWeight: 600,
+            lineHeight: 1.4,
+            color: C.white,
+            opacity: line1.opacity,
+            transform: `translateY(${line1.y}px)`,
+          }}
+        >
+          Our core platform for single entities{" "}
+          <span style={{ color: C.teal }}>extends to multiple entities.</span>
+        </div>
+        <div
+          style={{
+            fontSize: 42,
+            fontWeight: 500,
+            lineHeight: 1.4,
+            color: C.caption,
+            marginTop: 36,
+            opacity: line2.opacity,
+            transform: `translateY(${line2.y}px)`,
+          }}
+        >
+          Now I will take you through the leading multi-entity use case,{" "}
+          <span style={{ color: C.orange, fontWeight: 700 }}>M&A.</span>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 const Scene5Convergence: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -1410,8 +1496,8 @@ const Scene5Convergence: React.FC = () => {
         return (
           <Sequence
             key={v.src}
-            from={(11 + i * 4) * 30}
-            durationInFrames={isLast ? 4 * 30 : 4 * 30 + OVERLAP}
+            from={(11 + i * 5) * 30}
+            durationInFrames={isLast ? 5 * 30 : 5 * 30 + OVERLAP}
             premountFor={15}
           >
             <ConvergenceVisual
@@ -1431,7 +1517,7 @@ const Scene5Convergence: React.FC = () => {
 // ═══════════════════════════════════════════════════════════
 // Total duration (scene durations are declared at top of file)
 // ═══════════════════════════════════════════════════════════
-export const AOS_MOVIE_FRAMES = (S0_DUR + S1_DUR + S2_DUR + S3A_DUR + S3B_DUR + S4_DUR + S5_DUR) * 30;
+export const AOS_MOVIE_FRAMES = (S0_DUR + S1_DUR + S2I_DUR + S2_DUR + S3A_DUR + S4_DUR + S5I_DUR + S5_DUR + S6_DUR) * 30;
 
 // ═══════════════════════════════════════════════════════════
 // Main Composition
@@ -1439,12 +1525,14 @@ export const AOS_MOVIE_FRAMES = (S0_DUR + S1_DUR + S2_DUR + S3A_DUR + S3B_DUR + 
 export const AosMovie: React.FC = () => {
   const S0 = S0_DUR * 30;
   const S1 = S1_DUR * 30;
+  const S2I = S2I_DUR * 30;
   const S2 = S2_DUR * 30;
   const S3A = S3A_DUR * 30;
-  const S3B = S3B_DUR * 30;
   const S4 = S4_DUR * 30;
+  const S5I = S5I_DUR * 30;
   const S5 = S5_DUR * 30;
-  const AFTER_S0 = S1 + S2 + S3A + S3B + S4 + S5;
+  const S6 = S6_DUR * 30;
+  const AFTER_S0 = S1 + S2I + S2 + S3A + S4 + S5I + S5 + S6;
 
   return (
     <AbsoluteFill style={{ backgroundColor: C.bg }}>
@@ -1456,24 +1544,37 @@ export const AosMovie: React.FC = () => {
         <Scene1Problems />
       </Sequence>
 
-      <Sequence from={S0 + S1} durationInFrames={S2} premountFor={30}>
+      <Sequence from={S0 + S1} durationInFrames={S2I} premountFor={30}>
+        <Scene2Intro />
+      </Sequence>
+
+      <Sequence from={S0 + S1 + S2I} durationInFrames={S2} premountFor={30}>
         <Scene2Solution />
       </Sequence>
 
-      <Sequence from={S0 + S1 + S2} durationInFrames={S3A} premountFor={30}>
+      <Sequence from={S0 + S1 + S2I + S2} durationInFrames={S3A} premountFor={30}>
         <Scene3aNLQ />
       </Sequence>
 
-      <Sequence from={S0 + S1 + S2 + S3A} durationInFrames={S3B} premountFor={30}>
-        <Scene3bDash />
-      </Sequence>
-
-      <Sequence from={S0 + S1 + S2 + S3A + S3B} durationInFrames={S4} premountFor={30}>
+      <Sequence from={S0 + S1 + S2I + S2 + S3A} durationInFrames={S4} premountFor={30}>
         <Scene4KnowledgeGraph />
       </Sequence>
 
-      <Sequence from={S0 + S1 + S2 + S3A + S3B + S4} durationInFrames={S5} premountFor={30}>
+      <Sequence from={S0 + S1 + S2I + S2 + S3A + S4} durationInFrames={S5I} premountFor={30}>
+        <Scene5Intro />
+      </Sequence>
+
+      <Sequence from={S0 + S1 + S2I + S2 + S3A + S4 + S5I} durationInFrames={S5} premountFor={30}>
         <Scene5Convergence />
+      </Sequence>
+
+      <Sequence from={S0 + S1 + S2I + S2 + S3A + S4 + S5I + S5} durationInFrames={S6} premountFor={30}>
+        <AbsoluteFill style={{ backgroundColor: C.bg }}>
+          <Img
+            src={staticFile("closing2.png")}
+            style={{ width: "100%", height: "100%", objectFit: "contain" }}
+          />
+        </AbsoluteFill>
       </Sequence>
 
       {/* ── Logo watermark — visible after Scene 0 ── */}
@@ -1492,20 +1593,24 @@ export const AosMovie: React.FC = () => {
       </Sequence>
 
       {/* ── Voiceover audio per scene ── */}
-      <Sequence from={0} durationInFrames={S0}>
+      <Sequence from={30} durationInFrames={S0 - 30}>
         <Audio src={staticFile("voiceover/scene0-title.mp3")} volume={0.9} />
       </Sequence>
       <Sequence from={S0} durationInFrames={S1}>
         <Audio src={staticFile("voiceover/scene1-problems.mp3")} volume={0.9} />
       </Sequence>
+      {/* ── Scene 2 Intro: establishing shot ── */}
+      <Sequence from={S0 + S1} durationInFrames={S2I}>
+        <Audio src={staticFile("voiceover/scene2-solution.mp3")} volume={0.9} />
+      </Sequence>
       {/* ── Scene 2: 4 per-stage voiceover clips aligned to zoom timing ── */}
       {(() => {
-        const S2_BASE = S0 + S1;
+        const S2_BASE = S0 + S1 + S2I;
         // Stage offsets (frames) — match Scene2Solution kfTimes holds
-        const STAGE_12 = Math.round(1.5 * 30); // discover  @ 1.5s
-        const STAGE_3 = Math.round(8.5 * 30); //  connect   @ 8.5s
-        const STAGE_4 = Math.round(15.0 * 30); // resolve   @ 15s
-        const STAGE_5 = Math.round(21.5 * 30); // ask       @ 21.5s
+        const STAGE_12 = Math.round(1.5 * 30); // discover  @ 1.5s (~10s clip)
+        const STAGE_3 = Math.round(12.5 * 30); // connect   @ 12.5s (+1s pause)
+        const STAGE_4 = Math.round(19.0 * 30); // resolve   @ 19s
+        const STAGE_5 = Math.round(27.0 * 30); // ask       @ 27s (+1s pause)
         return (
           <>
             <Sequence from={S2_BASE + STAGE_12} durationInFrames={S2 - STAGE_12}>
@@ -1524,27 +1629,28 @@ export const AosMovie: React.FC = () => {
         );
       })()}
       {/* ── Scene 3A: Mai Q&A (first chat) + config changes (second chat) ── */}
-      <Sequence from={S0 + S1 + S2} durationInFrames={S3A}>
+      <Sequence from={S0 + S1 + S2I + S2} durationInFrames={S3A}>
         <Audio src={staticFile("voiceover/scene3a-mai.mp3")} volume={0.9} />
       </Sequence>
       <Sequence
-        from={S0 + S1 + S2 + Math.round(14.8 * 30)}
-        durationInFrames={S3A - Math.round(14.8 * 30)}
+        from={S0 + S1 + S2I + S2 + Math.round(15.5 * 30)}
+        durationInFrames={S3A - Math.round(15.5 * 30)}
       >
         <Audio src={staticFile("voiceover/scene3a-mai-config.mp3")} volume={0.9} />
       </Sequence>
-      <Sequence from={S0 + S1 + S2 + S3A} durationInFrames={S3B}>
-        <Audio src={staticFile("voiceover/scene3b-dashboards.mp3")} volume={0.9} />
-      </Sequence>
-      <Sequence from={S0 + S1 + S2 + S3A + S3B} durationInFrames={S4}>
+      <Sequence from={S0 + S1 + S2I + S2 + S3A} durationInFrames={S4}>
         <Audio src={staticFile("voiceover/scene4-knowledgegraph.mp3")} volume={0.9} />
       </Sequence>
 
+      {/* ── Scene 5 intro transition ── */}
+      <Sequence from={S0 + S1 + S2I + S2 + S3A + S4} durationInFrames={S5I}>
+        <Audio src={staticFile("voiceover/scene5-intro.mp3")} volume={0.9} />
+      </Sequence>
       {/* ── Scene 5 per-slide voiceovers ── */}
       {(() => {
-        const S5_BASE = S0 + S1 + S2 + S3A + S3B + S4;
+        const S5_BASE = S0 + S1 + S2I + S2 + S3A + S4 + S5I;
         const TITLE = 11 * 30;
-        const SLIDE = 4 * 30;
+        const SLIDE = 5 * 30;
         return (
           <>
             <Sequence from={S5_BASE} durationInFrames={TITLE}>

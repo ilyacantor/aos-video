@@ -46,7 +46,7 @@ const SCENES: Scene[] = [
   },
   {
     id: "scene1-problems",
-    text: "Every enterprise hits the same wall. Hundreds of systems, none of them talking to each other. The data is there, but the context isn't. And without context, nothing works the way it should.",
+    text: "Many enterprises hit the same wall. Hundreds of systems, none of them talking to each other. The data is there, but the context isn't. And without context, nothing works the way it should.",
   },
   {
     id: "scene2-solution",
@@ -54,7 +54,7 @@ const SCENES: Scene[] = [
   },
   {
     id: "scene2-discover",
-    text: "First, autonomous discovers every system in your enterprise and builds a clean catalog of the IT assets we'll connect to.",
+    text: "Let me tell you how it works. First, autonomous discovers every system in your enterprise and builds a clean catalog of the IT assets we'll connect to.",
   },
   {
     id: "scene2-connect",
@@ -74,15 +74,15 @@ const SCENES: Scene[] = [
   },
   {
     id: "scene3a-mai-config",
-    text: "You can also ask Mai to reconfigure the platform — and changes happen instantly.",
-  },
-  {
-    id: "scene3b-dashboards",
-    text: "Dashboards are fully-featured and self-generating. Start from a preset, or spin one up on demand, in response to a natural language query — grounded in your live enterprise data.",
+    text: "You can also ask Mai to make human-supervised changes to the platform, from simple configuration and UI changes to adding entire domains to the org structure. Simple changes happen instantly.",
   },
   {
     id: "scene4-knowledgegraph",
-    text: "For agents and humans to truly collaborate, they need more than just data—they need context. context OS deploys Mai to scan surface-level relationships and work with your stakeholders to build a dynamic Knowledge Graph. This isn't just a database; it's a living network of people, assets, and concepts. By mapping these connections, Mai provides the semantic intelligence your enterprise needs to power autonomous agents and establish a single, context-aware source of truth.",
+    text: "For agents and humans to work effectively, they need more than just data—they need context. context OS deploys Mai to scan surface-level relationships and work with your stakeholders to build a dynamic Knowledge Graph. This isn't just a database; it's a living network of people, assets, and concepts. By mapping these connections, Mai provides the semantic intelligence your enterprise needs to power autonomous agents and establish a single, context-aware source of truth.",
+  },
+  {
+    id: "scene5-intro",
+    text: "Our core platform for single entities extends to multiple entities. Now I will take you through the leading multi-entity use case, M&A.",
   },
   {
     id: "scene5-title",
