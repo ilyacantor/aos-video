@@ -45,7 +45,7 @@ const S3A_DUR = 28; // Mai: Q&A (first chat) + config changes (second chat)
 const S4_DUR = 31;
 const S5I_DUR = 11; // Transition text: single → multi-entity intro
 const S5_DUR = 35; // Convergence: 11s title + 5 × 5s visuals (was 4s)
-const S6_DUR = 8; // Closing card
+const S6_DUR = 20; // Closing card with byline VO
 const FADE = 0.3; // uniform end-of-scene fade-out
 
 // ═══════════════════════════════════════════════════════════
@@ -1674,6 +1674,10 @@ export const AosMovie: React.FC = () => {
           </>
         );
       })()}
+      {/* ── Scene 6: Closing card ── */}
+      <Sequence from={S0 + S1 + S2I + S2 + S3A + S4 + S5I + S5} durationInFrames={S6}>
+        <Audio src={staticFile("voiceover/scene6-closing.mp3")} volume={0.9} />
+      </Sequence>
     </AbsoluteFill>
   );
 };

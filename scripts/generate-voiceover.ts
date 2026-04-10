@@ -81,6 +81,10 @@ const SCENES: Scene[] = [
     text: "For agents and humans to work effectively, they need more than just data—they need context. context OS deploys Mai to scan surface-level relationships and work with your stakeholders to build a dynamic Knowledge Graph. This isn't just a database; it's a living network of people, assets, and concepts. By mapping these connections, Mai provides the semantic intelligence your enterprise needs to power autonomous agents and establish a single, context-aware source of truth.",
   },
   {
+    id: "scene6-closing",
+    text: "autonomous is purpose-built to thrive in the reality of enterprise technology: legacy systems, data silos, and constant change. Our light, fast, secure connectivity — combined with unified intelligence and massive orchestration — enables outcome-based automation at scale.",
+  },
+  {
     id: "scene5-intro",
     text: "Our core platform for single entities extends to multiple entities. Now I will take you through the leading multi-entity use case, M&A.",
   },
