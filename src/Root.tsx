@@ -5,16 +5,16 @@ import { AosDemo, AOS_DEMO_DURATION } from "./AosDemo";
 import { StackedPlanes } from "./StackedPlanes";
 import { DemoScript } from "./DemoScript";
 import { AosDemoProd, TOTAL_FRAMES } from "./aos-demo";
-import { DemoV2, DEMO_V2_FRAMES } from "./DemoV2";
+import { AosMovie, AOS_MOVIE_FRAMES } from "./DemoV2";
 import { DemoV3, DEMO_V3_FRAMES } from "./DemoV3";
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
       <Composition
-        id="DemoV2"
-        component={DemoV2}
-        durationInFrames={DEMO_V2_FRAMES}
+        id="aos-movie"
+        component={AosMovie}
+        durationInFrames={AOS_MOVIE_FRAMES}
         fps={30}
         width={1920}
         height={1080}

@@ -1431,12 +1431,12 @@ const Scene5Convergence: React.FC = () => {
 // ═══════════════════════════════════════════════════════════
 // Total duration (scene durations are declared at top of file)
 // ═══════════════════════════════════════════════════════════
-export const DEMO_V2_FRAMES = (S0_DUR + S1_DUR + S2_DUR + S3A_DUR + S3B_DUR + S4_DUR + S5_DUR) * 30;
+export const AOS_MOVIE_FRAMES = (S0_DUR + S1_DUR + S2_DUR + S3A_DUR + S3B_DUR + S4_DUR + S5_DUR) * 30;
 
 // ═══════════════════════════════════════════════════════════
 // Main Composition
 // ═══════════════════════════════════════════════════════════
-export const DemoV2: React.FC = () => {
+export const AosMovie: React.FC = () => {
   const S0 = S0_DUR * 30;
   const S1 = S1_DUR * 30;
   const S2 = S2_DUR * 30;

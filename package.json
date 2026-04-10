@@ -28,7 +28,8 @@
   },
   "scripts": {
     "dev": "remotion studio",
-    "build": "remotion bundle",
+    "build": "remotion bundle --public-dir=public",
+    "render": "remotion render aos-movie out/aos-movie.mp4",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"
   },
