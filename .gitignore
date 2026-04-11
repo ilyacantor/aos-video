@@ -3,5 +3,13 @@ dist
 .DS_Store
 .env
 
-# Track index.html but ignore rendered videos
+# Rendered videos and generated assets
 out/*.mp4
+out/avatar/
+out/presenters/
+out/voice-test/
+
+# D-ID avatar clips and scene segments (large binaries, regenerated from scripts)
+public/avatar/*.mp4
+public/scenes/
+public/base-video.mp4

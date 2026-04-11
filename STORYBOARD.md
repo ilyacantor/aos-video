@@ -1,143 +1,118 @@
-# AOS Demo V2 — Storyboard
+# AOS Demo — Storyboard
 
-**Total runtime:** 1:59 (119s · 3,570 frames @ 30 fps)
-**Composition:** `DemoV2` in `src/DemoV2.tsx`
-**Scene durations:** see `S0_DUR` … `S5_DUR` (lines 35–41)
-**Transitions:** uniform 0.3s end-of-scene fade (`sceneFadeOut`) except Scene 5, which uses 0.5s crossfades between slides
-**Persistent elements:** `favicon.png` watermark (top-right) from 0:04 to end
+Two compositions share the same visual scenes:
 
----
-
-## Scene 0 — Title Card  `0:00 – 0:04` · **4s**
-
-- **Component:** `Scene0Title`
-- **Assets:** `public/favicon.png`
-- **VO:** `public/voiceover/scene0-title.mp3` · 2.85s
-- **Script:** *"What if your enterprise could finally understand itself?"*
-- **Action:** Cold open on brand mark + pose-setting question. End-of-scene fade at 3.7s.
+| | `aos-movie` (ElevenLabs) | `avatar-demo` (D-ID Mai) |
+|---|---|---|
+| **Source** | `src/DemoV2.tsx` | `src/AvatarDemo.tsx` |
+| **VO** | ElevenLabs MP3s, fixed scene durations | D-ID Lily avatar, speech-driven timing |
+| **Runtime** | 3:39 (219s) | 3:27 (207s) |
 
 ---
 
-## Scene 1 — The Problem  `0:04 – 0:16` · **12s**
+## Avatar Demo — Speech-Driven Timeline
 
-- **Component:** `Scene1Problems`
-- **Assets:** `public/funnel.mp4` (background), `COLUMNS` data block (src lines 78–95)
-- **VO:** `public/voiceover/scene1-problems.mp3` · 10.79s
-- **Script:** *"Every enterprise hits the same wall. Hundreds of systems, none of them talking to each other. The data is there, but the context isn't. And without context, nothing works the way it should."*
-- **Action:** Two-column layout lands over the funnel video.
-  - **Left column — "Enterprise Information is Broken":** 900+ applications (avg enterprise, before agentic sprawl) · 71% are disconnected · 95% of IT leaders cite integration as the #1 barrier to AI adoption.
-  - **Right column — "The Context Gap":** enterprise data exists across hundreds of systems with no shared semantic layer · teams operate from different numbers, different definitions, multiple sources of truth · AI agents hallucinate without structured context.
+Speech is the single source of truth. Visual scenes persist until narration finishes.
+Durations in `D` map (`AvatarDemo.tsx`) → `concat-avatar.ts` → everything reflows.
 
----
+| Visual | From | To | Dur | Clip | Speech |
+|--------|------|----|-----|------|--------|
+| **Title Card** | 0:00 | 0:07 | 7.0s | scene0-mai-intro | "Hi, I'm Mai, the autonomous customer success agent. I'm here to walk you through our platform." |
+| **Scene 1** | 0:07 | 0:25 | 18.4s | scene0-title | "Now, imagine that your enterprise can finally understand itself." |
+| | | | | scene1-problems | "Many enterprises hit the same wall. Hundreds of systems, none of them talking to each other. The data is there, but the context isn't. And without context, nothing works the way it should." |
+| **Scene 2 Intro** | 0:25 | 0:41 | 15.3s | scene2-solution | "That's what autonomous changes. One layer that sits on top of everything you already have. No migration, no rip and replace. It connects, it resolves, and it gives your entire organization a shared language." |
+| **Scene 2** | 0:41 | 1:24 | 43.3s | scene2-discover (@1.5s) | "Let me tell you how it works. First, autonomous discovers every system in your enterprise and builds a clean catalog of the IT assets we'll connect to." |
+| | | | | scene2-connect (@12.5s) | "Our patented harness plugs into your existing integration infrastructure and routes your data to the Semantics engine." |
+| | | | | scene2-resolve (@20.5s) | "There, your data isn't just normalized. The relationships inside it are discovered and stored in a Knowledge Graph." |
+| | | | | scene2-ask (@29.5s) | "And this context-rich store becomes available in easy-to-consume formats — whether natural language query, or self-generating dashboards. Agents finally get the context they need to act, without hallucinating." |
+| **Scene 3A** | 1:24 | 1:52 | 28.4s | scene3a-mai | "Every autonomous deployment includes me — I'm your customer success agent. I handle onboarding, training, and configuration changes, and I know the platform end-to-end. I also answer questions about your data, in natural language." |
+| | | | | scene3a-mai-config (@16s) | "You can also ask me to make human-supervised changes to the platform, from simple configuration and UI changes to adding entire domains to the org structure. Simple changes happen instantly." |
+| **Scene 4** | 1:52 | 2:20 | 28.0s | scene4-knowledgegraph | "For agents and humans to work effectively, they need more than just data — they need context. I scan surface-level relationships and work with your stakeholders to build a dynamic Knowledge Graph. This isn't just a database; it's a living network of people, assets, and concepts. By mapping these connections, I provide the semantic intelligence your enterprise needs to power autonomous agents and establish a single context-aware source of truth." |
+| **Scene 5 Intro** | 2:20 | 2:29 | 8.8s | scene5-intro | "Our core platform for single entities extends to multiple entities. Now I will take you through the leading multi-entity use case, M&A." |
+| **Scene 5** | 2:29 | 3:12 | 43.0s | scene5-title (@0s) | "M&A runs on an impossible clock. Two companies, two sets of books, two versions of the truth. Convergence turns weeks of diligence into hours — and complexity into clarity. Here are some of the essential diligence tools we automate." |
+| | | | | scene5-combine (@16s) | "One unified financial picture across both companies." |
+| | | | | scene5-qofe (@21s) | "Quality of earnings, automated — every adjustment flagged." |
+| | | | | scene5-ebitda (@26s) | "Proforma combined earnings, automatically generated in due diligence, and tracked through the entire deal cycle to post-close." |
+| | | | | scene5-xsell (@34s) | "Cross-sell thesis, validated across both customer books." |
+| | | | | scene5-backoffice (@39s) | "Backoffice overlap quantified across people and systems." |
+| **Scene 6** | 3:12 | 3:27 | 15.1s | scene6-closing | "autonomous is purpose-built to thrive in the reality of enterprise technology. Our light, fast, secure abstraction layer enables outcome-based automation at scale. If you want to learn more, visit us at autonomous dot tech." |
 
-## Scene 2 — The Solution  `0:16 – 0:30` · **14s**
+### Iteration workflow
 
-- **Component:** `Scene2Solution`
-- **Assets:** `public/a1.jpeg` (AOS platform diagram)
-- **VO:** `public/voiceover/scene2-solution.mp3` · 12.88s
-- **Script:** *"That's what AOS changes. One layer that sits on top of everything you already have. No migration. No rip and replace. It connects, it resolves, and it gives your entire organization a shared language."*
-- **Action:** Reveal the AOS platform layer sitting over existing enterprise systems. Calls out connect / resolve / shared language.
+1. Edit script text in `scripts/did-test/generate-avatar.ts`
+2. Regenerate clip: `npx tsx scripts/did-test/generate-avatar.ts scene2-solution`
+3. Update `D` duration in `src/AvatarDemo.tsx` (read from MP4 header)
+4. Rebuild concat: `npx tsx scripts/did-test/concat-avatar.ts`
+5. Preview in Remotion Studio
 
----
+### Avatar pipeline files
 
-## Scene 3A — Meet Mai  `0:30 – 0:45` · **15s**
-
-- **Component:** `Scene3aNLQ`
-- **VO:** `public/voiceover/scene3a-mai.mp3` · 14.31s
-- **Script:** *"Every autonomOS deployment includes Mai — your customer success agent. Mai handles onboarding, training, and configuration changes, and knows the platform end-to-end. She also answers questions about your data, in natural language."*
-- **Action:** Introduces Mai as the embedded CSM agent + NLQ surface.
-
----
-
-## Scene 3B — Self-Generating Dashboards  `0:45 – 0:57` · **12s**
-
-- **Component:** `Scene3bDash`
-- **Assets:** `public/dash.png`
-- **VO:** `public/voiceover/scene3b-dashboards.mp3` · 10.66s
-- **Script:** *"Dashboards are fully-featured and self-generating. Start from a preset, or spin one up on demand, in response to a natural language query — grounded in your live enterprise data."*
-- **Action:** Dashboard screenshot with call-outs to presets + on-demand NLQ-driven view creation.
-
----
-
-## Scene 4 — Knowledge Graph  `0:57 – 1:28` · **31s**
-
-- **Component:** `Scene4KnowledgeGraph`
-- **Assets:** `public/aos_kg_v3.html` (interactive graph, embedded via iframe)
-- **VO:** `public/voiceover/scene4-knowledgegraph.mp3` · 29.73s
-- **Script:** *"For agents and humans to truly collaborate, they need more than just data — they need context. contextOS deploys Mai to scan surface-level relationships and work with your stakeholders to build a dynamic Knowledge Graph. This isn't just a database; it's a living network of people, assets, and concepts. By mapping these connections, Mai provides the semantic intelligence your enterprise needs to power autonomous agents and establish a single, context-aware source of truth."*
-- **Action:** Live interactive knowledge graph plays in-frame while VO explains the semantic layer.
+| File | Purpose |
+|---|---|
+| `scripts/did-test/generate-avatar.ts` | D-ID clip generation (Lily presenter, Microsoft TTS) |
+| `scripts/did-test/concat-avatar.ts` | Concatenates clips into `avatar-combined.mp4` with timing gaps |
+| `src/AvatarDemo.tsx` | Remotion composition — `D` map is single source of truth |
+| `public/avatar/*.mp4` | Individual D-ID clips |
+| `public/avatar/avatar-combined.mp4` | Combined avatar video |
+| `public/scenes/*.mp4` | Base video split into per-scene segments |
 
 ---
 
-## Scene 5 — Convergence (M&A Use Case)  `1:28 – 2:00` · **31s**
+## ElevenLabs Demo — Fixed Timeline
 
-Five slides with **0.5s crossfades** between each. Title card extends the fade into slide 1. Each visual is full-bleed with a translucent overlay card that translateY-eases in over 0.5s. Background holds a gentle Ken Burns zoom.
+Scene durations are constants in `src/DemoV2.tsx` (lines 40-48).
 
-### 5.0 — Title  `1:28 – 1:39` · **11s**
-- **Assets:** `public/convergence-title2.png`
-- **VO:** `public/voiceover/scene5-title.mp3` · 10.40s
-- **Script:** *"M&A runs on an impossible clock. Two companies, two sets of books, two versions of the truth. Convergence turns weeks of diligence into hours — and complexity into clarity."*
-- **Action:** Full-bleed title card. Scale 1.00 → 1.06 over 11.5s; crossfades into slide 5.1 during the last 0.5s.
+### Scene 0 — Title Card  `0:00 – 0:04` · 4s
+- **VO:** `scene0-title.mp3` — *"What if your enterprise could finally understand itself?"*
 
-### 5.1 — Combine  `1:39 – 1:43` · **4s** · card on **left**
-- **Assets:** `public/combine_fs.png`
-- **VO:** `public/voiceover/scene5-combine.mp3` · 3.16s
-- **Script:** *"One unified financial picture across both companies."*
-- **Card:** *(no overlay — full-bleed visual only)*
+### Scene 1 — The Problem  `0:04 – 0:18` · 14s
+- **VO:** `scene1-problems.mp3` — *"Many enterprises hit the same wall. Hundreds of systems, none of them talking to each other. The data is there, but the context isn't. And without context, nothing works the way it should."*
 
-### 5.2 — Quality of Earnings  `1:43 – 1:47` · **4s** · card on **right**
-- **Assets:** `public/qofe2.png`
-- **VO:** `public/voiceover/scene5-qofe.mp3` · 4.00s
-- **Script:** *"Quality of earnings, automated — every adjustment flagged."*
-- **Card title:** "QoE"
-- **Card body:** Quality of earnings evaluates the sustainability, accuracy, and reliability of a company's reported earnings, primarily during mergers, acquisitions, or investments. It helps stakeholders validate EBITDA, identify non-recurring items, assess cash flow, and uncover risks — ensuring a fair valuation and reducing overpayment risks.
+### Scene 2 Intro  `0:18 – 0:33` · 15s
+- **VO:** `scene2-solution.mp3` — *"That's what autonomous changes. One layer that sits on top of everything you already have. No migration, no rip and replace. It connects, it resolves, and it gives your entire organization a shared language."*
 
-### 5.3 — Pro forma EBITDA  `1:47 – 1:51` · **4s** · card on **left**
-- **Assets:** `public/ebitda2.png`
-- **VO:** `public/voiceover/scene5-ebitda.mp3` · 4.00s
-- **Script:** *"Pro forma EBITDA with a transparent bridge to run-rate."*
-- **Card title:** "Proforma EBITDA"
-- **Card body:** Reported EBITDA always needs adjustment — for one-time items, normalizations, run-rate corrections, and pro forma synergies. Convergence builds the bridge automatically, entity-tagged with confidence scores distinguishing high-certainty items from estimates.
+### Scene 2 — Zoom Walkthrough  `0:33 – 1:17` · 44s
+- **Chain group:** `scene2` (stability 0.75, style 0.1)
+- **VO:** 4 clips at offsets 1.5s, 12.5s, 20.5s, 29.5s
 
-### 5.4 — Cross-Sell / Upsell  `1:51 – 1:55` · **4s** · card on **right**
-- **Assets:** `public/x-sell2.png`
-- **VO:** `public/voiceover/scene5-xsell.mp3` · 3.84s
-- **Script:** *"Cross-sell thesis, validated across both customer books."*
-- **Card title:** "Cross-sell and upsell roadmap"
-- **Card body:** The cross-sell thesis is the core thesis of most deals — and the hardest to validate. AOS.AI profiles 80% of the combined customer base automatically, then works with your sales team on the rest.
+### Scene 3A — Meet Mai  `1:17 – 1:47` · 30s
+- **VO:** `scene3a-mai.mp3` + `scene3a-mai-config.mp3` (@16s)
 
-### 5.5 — Backoffice Overlap  `1:55 – 2:00` · **4s** · card on **left** *(last slide — parent scene fade handles end)*
-- **Assets:** `public/backoffice2.png`
-- **VO:** `public/voiceover/scene5-backoffice.mp3` · 3.42s
-- **Script:** *"Backoffice overlap quantified across people and systems."*
-- **Card title:** "Backoffice overlap assessment"
-- **Card body:** Convergence produces overlap analysis automatically — across customers, vendors, IT, and personnel — with match confidence and combined financial impact.
+### Scene 4 — Knowledge Graph  `1:47 – 2:21` · 34s
+- **VO:** `scene4-knowledgegraph.mp3`
+
+### Scene 5 Intro  `2:21 – 2:32` · 11s
+- **VO:** `scene5-intro.mp3`
+
+### Scene 5 — Convergence  `2:32 – 3:16` · 44s
+- **Chain group:** `scene5` (stability 0.75, style 0.1)
+- **VO:** 6 slides (title@0, combine@16, qofe@21, ebitda@26, xsell@34, backoffice@39)
+
+### Scene 6 — Closing  `3:16 – 3:39` · 23s
+- **VO:** `scene6-closing.mp3` — *"autonomous is purpose-built to thrive in the reality of enterprise technology: legacy systems, data silos, and constant change. Our light, fast, secure connectivity — combined with unified intelligence — enables outcome-based automation at scale. Visit our website for an interactive demo and contact information."*
 
 ---
 
-## Voiceover Pipeline
+## Voiceover Pipeline (ElevenLabs)
 
 - **Provider:** ElevenLabs (`eleven_multilingual_v2`)
-- **Voice:** `gJx1vCzNCD1EQHT212Ls` — Ava, Eager / Helpful
-- **Default voice_settings:** stability 0.5 · similarity_boost 0.75 · style 0.3
-- **Scene 5 voice_settings (tighter):** stability 0.75 · similarity_boost 0.75 · style 0.1
-- **Prosody chaining:** scene 5 clips share a `chainGroup` and pass up to 3 `previous_request_ids` so Ava's delivery threads across the six short clips
-- **Generator:** `scripts/generate-voiceover.ts` — skips existing unless `--force`; chain groups regenerate all-or-nothing
-- **Fit checker:** `scripts/measure-scene5.mjs` — measures every scene 5 clip against its slot via `@remotion/media-parser`
+- **Voice:** `XrExE9yKIg1WjnnlVkGX` — Matilda
+- **Default settings:** stability 0.5 · similarity_boost 0.75 · style 0.3
+- **Tight settings (scene2 + scene5):** stability 0.75 · style 0.1
+- **Generator:** `scripts/generate-voiceover.ts`
 
 ## File Map
 
 | Asset | Used By |
 |---|---|
-| `public/favicon.png` | Scene 0 mark + persistent watermark |
+| `public/favicon.png` | Title card + persistent watermark |
 | `public/funnel.mp4` | Scene 1 background |
-| `public/a1.jpeg` | Scene 2 platform diagram |
-| `public/dash.png` | Scene 3B dashboards |
-| `public/aos_kg_v3.html` | Scene 4 interactive graph (iframe) |
-| `public/convergence-title2.png` | Scene 5.0 title card |
+| `public/a1.jpeg` | Scene 2 Intro + Scene 2 zoom |
+| `public/aos_kg_v3.html` | Scene 4 interactive graph |
+| `public/convergence-title2.png` | Scene 5.0 title |
 | `public/combine_fs.png` | Scene 5.1 |
 | `public/qofe2.png` | Scene 5.2 |
 | `public/ebitda2.png` | Scene 5.3 |
 | `public/x-sell2.png` | Scene 5.4 |
 | `public/backoffice2.png` | Scene 5.5 |
-| `public/voiceover/scene{0..5}-*.mp3` | One VO clip per scene; Scene 5 has 6 per-slide clips |
+| `public/closing2.png` | Scene 6 |
