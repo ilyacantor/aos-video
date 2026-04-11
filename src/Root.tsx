@@ -20,14 +20,6 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
       />
       <Composition
-        id="MyComp"
-        component={MyComposition}
-        durationInFrames={600}
-        fps={30}
-        width={1280}
-        height={720}
-      />
-      <Composition
         id="AosDemo"
         component={AosDemo}
         durationInFrames={AOS_DEMO_DURATION}
@@ -43,14 +35,7 @@ export const RemotionRoot: React.FC = () => {
         width={1280}
         height={720}
       />
-      <Composition
-        id="DemoScript"
-        component={DemoScript}
-        durationInFrames={2520}
-        fps={30}
-        width={1280}
-        height={720}
-      />
+
       <Composition
         id="AosDemoProd"
         component={AosDemoProd}

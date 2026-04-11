@@ -38,14 +38,14 @@ const FONT = `${fontFamily}, sans-serif`;
 //   S5≈29.4s (title 10.4s + 5 × ≤4s)
 // ═══════════════════════════════════════════════════════════
 const S0_DUR = 4;
-const S1_DUR = 12;
-const S2I_DUR = 14; // Establishing shot: full image + card with text on left
-const S2_DUR = 41; // 5-stage zoom walkthrough (longer discover + 1s pauses)
-const S3A_DUR = 28; // Mai: Q&A (first chat) + config changes (second chat)
-const S4_DUR = 31;
+const S1_DUR = 14;
+const S2I_DUR = 15; // Establishing shot: full image + card with text on left
+const S2_DUR = 44; // 5-stage zoom walkthrough (Matilda pacing + 1s pauses)
+const S3A_DUR = 30; // Mai: Q&A + config changes (Matilda ~15.6s + ~12.8s)
+const S4_DUR = 34;
 const S5I_DUR = 11; // Transition text: single → multi-entity intro
-const S5_DUR = 35; // Convergence: 11s title + 5 × 5s visuals (was 4s)
-const S6_DUR = 20; // Closing card with byline VO
+const S5_DUR = 44; // Convergence: 16s title + 5+5+8+5+5 visuals
+const S6_DUR = 23; // Closing card with byline VO
 const FADE = 0.3; // uniform end-of-scene fade-out
 
 // ═══════════════════════════════════════════════════════════
@@ -373,8 +373,8 @@ const Scene2Solution: React.FC = () => {
   // Zoom + pan keyframes — slow cinematic zoom-in, then 0.5s pans between stages.
   const kfTimes = [
     t(0),    t(3.0),  t(3.5),  t(12.0),
-    t(13.0), t(18.5), t(19.5), t(26.5),
-    t(27.5), t(41.0),
+    t(13.0), t(20.0), t(21.0), t(29.0),
+    t(30.0), t(44.0),
   ];
   const kfScale = [1.0, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9];
   // tx for each hold position (scale = 1.9):
@@ -579,7 +579,7 @@ const Scene3aNLQ: React.FC = () => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: `translate(-50%, -50%) scale(${interpolate(modalIn, [0, 1], [0.95, 1])})`,
+          transform: `translate(-50%, -50%) scale(${interpolate(modalIn, [0, 1], [1.425, 1.5])})`,
           width: 620,
           background: "#1a1f2a",
           borderRadius: 16,
@@ -777,7 +777,7 @@ const Scene3aNLQ: React.FC = () => {
           position: "absolute",
           left: "50%",
           top: "50%",
-          transform: "translate(-50%, -50%)",
+          transform: "translate(-50%, -50%) scale(1.5)",
           width: 620,
           background: "#1a1f2a",
           borderRadius: 16,
@@ -1278,9 +1278,9 @@ const ConvergenceTitle: React.FC = () => {
   const { fps } = useVideoConfig();
 
   const fadeIn = lerp(frame, [0, 0.4 * fps], [0, 1]);
-  const scale = lerp(frame, [0, 11.5 * fps], [1, 1.06]);
+  const scale = lerp(frame, [0, 14.5 * fps], [1, 1.06]);
   // Fades out over 0.5s overlapping with slide 0's fade-in (crossfade)
-  const fadeOut = lerp(frame, [11 * fps, 11.5 * fps], [1, 0]);
+  const fadeOut = lerp(frame, [14 * fps, 14.5 * fps], [1, 0]);
 
   return (
     <AbsoluteFill
@@ -1425,7 +1425,6 @@ const Scene5Intro: React.FC = () => {
   const { fps } = useVideoConfig();
 
   const line1 = anim(frame, fps, 0.3);
-  const line2 = anim(frame, fps, 2.5);
 
   return (
     <AbsoluteFill
@@ -1452,20 +1451,6 @@ const Scene5Intro: React.FC = () => {
           Our core platform for single entities{" "}
           <span style={{ color: C.teal }}>extends to multiple entities.</span>
         </div>
-        <div
-          style={{
-            fontSize: 42,
-            fontWeight: 500,
-            lineHeight: 1.4,
-            color: C.caption,
-            marginTop: 36,
-            opacity: line2.opacity,
-            transform: `translateY(${line2.y}px)`,
-          }}
-        >
-          Now I will take you through the leading multi-entity use case,{" "}
-          <span style={{ color: C.orange, fontWeight: 700 }}>M&A.</span>
-        </div>
       </div>
     </AbsoluteFill>
   );
@@ -1488,18 +1473,25 @@ const Scene5Convergence: React.FC = () => {
         opacity: sceneFadeOut(frame, fps, S5_DUR),
       }}
     >
-      <Sequence from={0} durationInFrames={11 * 30 + OVERLAP} premountFor={15}>
+      <Sequence from={0} durationInFrames={16 * 30 + OVERLAP} premountFor={15}>
         <ConvergenceTitle />
       </Sequence>
-      {CONV_VISUALS.map((v, i) => {
-        const isLast = i === CONV_VISUALS.length - 1;
-        return (
-          <Sequence
-            key={v.src}
-            from={(11 + i * 5) * 30}
-            durationInFrames={isLast ? 5 * 30 : 5 * 30 + OVERLAP}
-            premountFor={15}
-          >
+      {(() => {
+        // Per-slide seconds: combine, qofe, ebitda, xsell, backoffice
+        const SL = [5, 5, 8, 5, 5];
+        const starts = SL.reduce<number[]>((a, _, i) => {
+          a.push(i === 0 ? 16 : a[i - 1] + SL[i - 1]);
+          return a;
+        }, []);
+        return CONV_VISUALS.map((v, i) => {
+          const isLast = i === CONV_VISUALS.length - 1;
+          return (
+            <Sequence
+              key={v.src}
+              from={starts[i] * 30}
+              durationInFrames={isLast ? SL[i] * 30 : SL[i] * 30 + OVERLAP}
+              premountFor={15}
+            >
             <ConvergenceVisual
               src={v.src}
               title={v.title}
@@ -1508,8 +1500,9 @@ const Scene5Convergence: React.FC = () => {
               isLast={isLast}
             />
           </Sequence>
-        );
-      })}
+          );
+        });
+      })()}
     </AbsoluteFill>
   );
 };
@@ -1607,10 +1600,10 @@ export const AosMovie: React.FC = () => {
       {(() => {
         const S2_BASE = S0 + S1 + S2I;
         // Stage offsets (frames) — match Scene2Solution kfTimes holds
-        const STAGE_12 = Math.round(1.5 * 30); // discover  @ 1.5s (~10s clip)
+        const STAGE_12 = Math.round(1.5 * 30); // discover  @ 1.5s (~9.4s clip)
         const STAGE_3 = Math.round(12.5 * 30); // connect   @ 12.5s (+1s pause)
-        const STAGE_4 = Math.round(19.0 * 30); // resolve   @ 19s
-        const STAGE_5 = Math.round(27.0 * 30); // ask       @ 27s (+1s pause)
+        const STAGE_4 = Math.round(20.5 * 30); // resolve   @ 20.5s
+        const STAGE_5 = Math.round(29.5 * 30); // ask       @ 29.5s (+1s pause)
         return (
           <>
             <Sequence from={S2_BASE + STAGE_12} durationInFrames={S2 - STAGE_12}>
@@ -1633,8 +1626,8 @@ export const AosMovie: React.FC = () => {
         <Audio src={staticFile("voiceover/scene3a-mai.mp3")} volume={0.9} />
       </Sequence>
       <Sequence
-        from={S0 + S1 + S2I + S2 + Math.round(15.5 * 30)}
-        durationInFrames={S3A - Math.round(15.5 * 30)}
+        from={S0 + S1 + S2I + S2 + Math.round(16.0 * 30)}
+        durationInFrames={S3A - Math.round(16.0 * 30)}
       >
         <Audio src={staticFile("voiceover/scene3a-mai-config.mp3")} volume={0.9} />
       </Sequence>
@@ -1649,26 +1642,31 @@ export const AosMovie: React.FC = () => {
       {/* ── Scene 5 per-slide voiceovers ── */}
       {(() => {
         const S5_BASE = S0 + S1 + S2I + S2 + S3A + S4 + S5I;
-        const TITLE = 11 * 30;
-        const SLIDE = 5 * 30;
+        const T = 16 * 30; // title
+        // Per-slide durations: combine(5), qofe(5), ebitda(8), xsell(5), backoffice(5)
+        const SL = [5, 5, 8, 5, 5].map((s) => s * 30);
+        const SO = SL.reduce<number[]>((a, _, i) => {
+          a.push(i === 0 ? T : a[i - 1] + SL[i - 1]);
+          return a;
+        }, []);
         return (
           <>
-            <Sequence from={S5_BASE} durationInFrames={TITLE}>
+            <Sequence from={S5_BASE} durationInFrames={T}>
               <Audio src={staticFile("voiceover/scene5-title.mp3")} volume={0.9} />
             </Sequence>
-            <Sequence from={S5_BASE + TITLE} durationInFrames={SLIDE}>
+            <Sequence from={S5_BASE + SO[0]} durationInFrames={SL[0]}>
               <Audio src={staticFile("voiceover/scene5-combine.mp3")} volume={0.9} />
             </Sequence>
-            <Sequence from={S5_BASE + TITLE + SLIDE} durationInFrames={SLIDE}>
+            <Sequence from={S5_BASE + SO[1]} durationInFrames={SL[1]}>
               <Audio src={staticFile("voiceover/scene5-qofe.mp3")} volume={0.9} />
             </Sequence>
-            <Sequence from={S5_BASE + TITLE + 2 * SLIDE} durationInFrames={SLIDE}>
+            <Sequence from={S5_BASE + SO[2]} durationInFrames={SL[2]}>
               <Audio src={staticFile("voiceover/scene5-ebitda.mp3")} volume={0.9} />
             </Sequence>
-            <Sequence from={S5_BASE + TITLE + 3 * SLIDE} durationInFrames={SLIDE}>
+            <Sequence from={S5_BASE + SO[3]} durationInFrames={SL[3]}>
               <Audio src={staticFile("voiceover/scene5-xsell.mp3")} volume={0.9} />
             </Sequence>
-            <Sequence from={S5_BASE + TITLE + 4 * SLIDE} durationInFrames={SLIDE}>
+            <Sequence from={S5_BASE + SO[4]} durationInFrames={SL[4]}>
               <Audio src={staticFile("voiceover/scene5-backoffice.mp3")} volume={0.9} />
             </Sequence>
           </>

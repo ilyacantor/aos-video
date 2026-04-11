@@ -6,7 +6,7 @@ import "dotenv/config";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const API_KEY = process.env.ELEVENLABS_API_KEY!;
-const VOICE_ID = "gJx1vCzNCD1EQHT212Ls"; // Ava – Eager, Helpful
+const VOICE_ID = "XrExE9yKIg1WjnnlVkGX"; // Matilda – Knowledgeable, Professional
 
 type VoiceSettings = {
   stability: number;
@@ -50,23 +50,31 @@ const SCENES: Scene[] = [
   },
   {
     id: "scene2-solution",
-    text: "That's what autonomous changes. One layer that sits on top of everything you already have. No migration. No rip and replace. It connects, it resolves, and it gives your entire organization a shared language.",
+    text: "That's what autonomous changes. One layer that sits on top of everything you already have. No migration, no rip and replace. It connects, it resolves, and it gives your entire organization a shared language.",
   },
   {
     id: "scene2-discover",
     text: "Let me tell you how it works. First, autonomous discovers every system in your enterprise and builds a clean catalog of the IT assets we'll connect to.",
+    chainGroup: "scene2",
+    voiceSettings: SCENE5_VOICE_SETTINGS,
   },
   {
     id: "scene2-connect",
     text: "Our patented harness plugs into your existing integration infrastructure and routes your data to the Semantics engine.",
+    chainGroup: "scene2",
+    voiceSettings: SCENE5_VOICE_SETTINGS,
   },
   {
     id: "scene2-resolve",
     text: "There, your data isn't just normalized. The relationships inside it are discovered and stored in a Knowledge Graph.",
+    chainGroup: "scene2",
+    voiceSettings: SCENE5_VOICE_SETTINGS,
   },
   {
     id: "scene2-ask",
     text: "And this context-rich store becomes available in easy-to-consume formats — whether natural language query, or self-generating dashboards. Agents finally get the context they need to act, without hallucinating.",
+    chainGroup: "scene2",
+    voiceSettings: SCENE5_VOICE_SETTINGS,
   },
   {
     id: "scene3a-mai",
@@ -78,11 +86,11 @@ const SCENES: Scene[] = [
   },
   {
     id: "scene4-knowledgegraph",
-    text: "For agents and humans to work effectively, they need more than just data—they need context. context OS deploys Mai to scan surface-level relationships and work with your stakeholders to build a dynamic Knowledge Graph. This isn't just a database; it's a living network of people, assets, and concepts. By mapping these connections, Mai provides the semantic intelligence your enterprise needs to power autonomous agents and establish a single, context-aware source of truth.",
+    text: "For agents and humans to work effectively, they need more than just data—they need context. context OS deploys Mai to scan surface-level relationships and work with your stakeholders to build a dynamic Knowledge Graph. This isn't just a database; it's a living network of people, assets, and concepts. By mapping these connections, Mai provides the semantic intelligence your enterprise needs to power autonomous agents and establish a single context-aware source of truth.",
   },
   {
     id: "scene6-closing",
-    text: "autonomous is purpose-built to thrive in the reality of enterprise technology: legacy systems, data silos, and constant change. Our light, fast, secure connectivity — combined with unified intelligence and massive orchestration — enables outcome-based automation at scale.",
+    text: "autonomous is purpose-built to thrive in the reality of enterprise technology: legacy systems, data silos, and constant change. Our light, fast, secure connectivity — combined with unified intelligence — enables outcome-based automation at scale. Visit our website for an interactive demo and contact information.",
   },
   {
     id: "scene5-intro",
@@ -90,7 +98,7 @@ const SCENES: Scene[] = [
   },
   {
     id: "scene5-title",
-    text: "M&A runs on an impossible clock. Two companies, two sets of books, two versions of the truth. Convergence turns weeks of diligence into hours — and complexity into clarity.",
+    text: "M&A runs on an impossible clock. Two companies, two sets of books, two versions of the truth. Convergence turns weeks of diligence into hours — and complexity into clarity. Here are some of the essential diligence tools we automate.",
     chainGroup: "scene5",
     voiceSettings: SCENE5_VOICE_SETTINGS,
   },
@@ -108,7 +116,7 @@ const SCENES: Scene[] = [
   },
   {
     id: "scene5-ebitda",
-    text: "Pro forma ee-BIT-dah with a transparent bridge to run-rate.",
+    text: "Proforma combined earnings, automatically generated in due diligence, and tracked through the entire deal cycle to post-close.",
     chainGroup: "scene5",
     voiceSettings: SCENE5_VOICE_SETTINGS,
   },
