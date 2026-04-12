@@ -28,55 +28,51 @@ type Scene = {
 const SCENES: Scene[] = [
   {
     id: "scene0-mai-intro",
-    text: "Hi, I'm Mai, the autonomous customer success agent. I'm here to walk you through our platform.",
-  },
-  {
-    id: "scene0-title",
-    text: "Now, imagine that your enterprise can finally understand itself.",
+    text: "Hi, I'm Mai. I'm the AI agent built into AOS — I'll walk you through the platform.",
   },
   {
     id: "scene1-problems",
-    text: "Many enterprises hit the same wall. Hundreds of systems, none of them talking to each other. The data is there, but the context isn't. And without context, nothing works the way it should.",
+    text: "Every enterprise runs on hundreds of systems that don't talk to each other. The data is there. The context isn't. So reports break, numbers fight each other, and the AI initiatives everyone's betting on stall before they ship.",
   },
   {
     id: "scene2-solution",
-    text: "That's what autonomous changes. One layer that sits on top of everything you already have. No migration, no rip and replace. It connects, it resolves, and it gives your entire organization a shared language.",
+    text: "AOS is the layer that fixes this. It sits on top of everything you already have — no migration, no rip and replace — and gives your whole organization one shared understanding of what's actually going on.",
   },
   {
     id: "scene2-discover",
-    text: "Let me tell you how it works. First, autonomous discovers every system in your enterprise and builds a clean catalog of the IT assets we'll connect to.",
+    text: "It starts with discovery. AOS scans your environment and builds a catalog of every system you have — including the ones nobody remembers buying.",
   },
   {
     id: "scene2-connect",
-    text: "Our patented harness plugs into your existing integration infrastructure and routes your data to the Semantics engine.",
+    text: "Then AOS connects to them. Your systems don't change. Your data doesn't move. Our layer sits on top, using the integration tools you already own — your iPaaS, your APIs, your warehouse.",
   },
   {
     id: "scene2-resolve",
-    text: "There, your data isn't just normalized. The relationships inside it are discovered and stored in a Knowledge Graph.",
+    text: "Then it figures out what the data actually means. How customers, products, contracts, and accounts relate to each other — automatically, across every source.",
   },
   {
     id: "scene2-ask",
-    text: "And this context-rich store becomes available in easy-to-consume formats — whether natural language query, or self-generating dashboards. Agents finally get the context they need to act, without hallucinating.",
+    text: "And the result is a context layer your whole organization can use.",
   },
   {
     id: "scene3a-mai",
-    text: "Every autonomous deployment includes me — I'm your customer success agent. I handle onboarding, training, and configuration changes, and I know the platform end-to-end. I also answer questions about your data, in natural language.",
+    text: "Each AOS deployment ships with me — I'm Mai, your AI agent. I handle onboarding, training, and configuration, and I answer questions about your data in plain English.",
   },
   {
     id: "scene3a-mai-config",
-    text: "You can also ask me to make human-supervised changes to the platform, from simple configuration and UI changes to adding entire domains to the org structure. Simple changes happen instantly.",
+    text: "You can also ask me to make changes to the platform. Simple things happen instantly. Bigger changes — like adding a new domain to your org — happen with your approval, and I walk you through it.",
   },
   {
     id: "scene4-knowledgegraph",
-    text: "For agents and humans to work effectively, they need more than just data — they need context. I scan surface-level relationships and work with your stakeholders to build a dynamic Knowledge Graph. This isn't just a database; it's a living network of people, assets, and concepts. By mapping these connections, I provide the semantic intelligence your enterprise needs to power autonomous agents and establish a single context-aware source of truth.",
+    text: "The thing that makes all of this work is the knowledge graph. It's not a database — it's a living map of your people, your systems, and how they actually relate to each other. That's the context your agents have been missing. And it's what lets them act instead of guess.",
   },
   {
     id: "scene5-intro",
-    text: "Our core platform for single entities extends to multiple entities. Now I will take you through the leading multi-entity use case, M&A.",
+    text: "Everything I've shown you so far works for one company. Now let me show you what happens when there are two. The leading use case: M&A.",
   },
   {
     id: "scene5-title",
-    text: "M&A runs on an impossible clock. Two companies, two sets of books, two versions of the truth. Convergence turns weeks of diligence into hours — and complexity into clarity. Here are some of the essential diligence tools we automate.",
+    text: "M&A runs on an impossible clock. Two companies, two sets of books, two versions of the truth. Convergence turns weeks of diligence into hours. Here's what we automate.",
   },
   {
     id: "scene5-combine",
@@ -88,7 +84,7 @@ const SCENES: Scene[] = [
   },
   {
     id: "scene5-ebitda",
-    text: "Proforma combined earnings, automatically generated in due diligence, and tracked through the entire deal cycle to post-close.",
+    text: "Proforma combined earnings, generated in diligence and tracked through close.",
   },
   {
     id: "scene5-xsell",
@@ -99,8 +95,25 @@ const SCENES: Scene[] = [
     text: "Backoffice overlap quantified across people and systems.",
   },
   {
-    id: "scene6-closing",
-    text: "autonomous is purpose-built to thrive in the reality of enterprise technology. Our light, fast, secure abstraction layer enables outcome-based automation at scale. If you want to learn more, visit us at autonomous dot tech.",
+    id: "scene6-deploy",
+    text: "And the best part: AOS deploys in days, not quarters. No migration. No rip and replace. Your systems stay exactly where they are.",
+  },
+  {
+    id: "scene7-closing",
+    text: "AOS is built for the reality of enterprise technology — light, fast, secure. If you want to see more, find us at A.O.S. dot tech.",
+  },
+  // ─── Merged per-group clips (natural cadence, zero internal gaps) ──
+  {
+    id: "scene2-all",
+    text: "It starts with discovery. AOS scans your environment and builds a catalog of every system you have — including the ones nobody remembers buying. Then AOS connects to them. Your systems don't change. Your data doesn't move. Our layer sits on top, using the integration tools you already own — your iPaaS, your APIs, your warehouse. Then it figures out what the data actually means. How customers, products, contracts, and accounts relate to each other — automatically, across every source. And the result is a context layer your whole organization can use.",
+  },
+  {
+    id: "scene3a-all",
+    text: "Each AOS deployment ships with me — I'm Mai, your AI agent. I handle onboarding, training, and configuration, and I answer questions about your data in plain English. You can also ask me to make changes to the platform. Simple things happen instantly. Bigger changes — like adding a new domain to your org — happen with your approval, and I walk you through it.",
+  },
+  {
+    id: "scene5-all",
+    text: "M&A runs on an impossible clock. Two companies, two sets of books, two versions of the truth. Convergence turns weeks of diligence into hours. Here's what we automate. One unified financial picture across both companies. Quality of earnings, automated — every adjustment flagged. Proforma combined earnings, generated in diligence and tracked through close. Cross-sell thesis, validated across both customer books. Backoffice overlap quantified across people and systems.",
   },
 ];
 

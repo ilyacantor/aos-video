@@ -19,94 +19,41 @@ const outFile = resolve(avatarDir, "avatar-combined.mp4");
 
 // ─── Clip durations (seconds) — MUST match AvatarDemo.tsx D map ─
 const DUR: Record<string, number> = {
-  "scene0-mai-intro": 7.03, "scene0-title": 4.76,
-  "scene1-problems": 13.64, "scene2-solution": 15.31,
-  "scene2-discover": 10.0, "scene2-connect": 7.0,
-  "scene2-resolve": 7.8, "scene2-ask": 13.75,
-  "scene3a-mai": 15.44, "scene3a-mai-config": 12.4,
-  "scene4-knowledgegraph": 28.0, "scene5-intro": 8.84,
-  "scene5-title": 16.16, "scene5-combine": 3.91,
-  "scene5-qofe": 4.16, "scene5-ebitda": 8.04,
-  "scene5-xsell": 4.4, "scene5-backoffice": 4.04,
-  "scene6-closing": 15.08,
+  "scene0-mai-intro": 7.00,
+  "scene1-problems": 15.50,
+  "scene2-solution": 13.40,
+  "scene2-all": 39.43,
+  "scene3a-all": 24.20,
+  "scene4-knowledgegraph": 17.06,
+  "scene5-intro": 9.76,
+  "scene5-all": 34.40,
+  "scene6-deploy": 11.47,
+  "scene7-closing": 9.92,
 };
 
 // ─── Narration groups (mirrors AvatarDemo.tsx) ────────────────
-// Each group: [groupStartOffset, [...clips with intra-group offsets]]
-// groupStartOffset = cumulative time from groups before it
-// Clips within a group use offsets relative to group start.
-
-const S2_OFF = { discover: 1.5, connect: 12.5, resolve: 20.5, ask: 29.5 };
-const S3A_CFG = 16.0;
-const S5_OFF = { title: 0, combine: 16, qofe: 21, ebitda: 26, xsell: 34, backoffice: 39 };
+// One merged D-ID clip per group — zero internal gaps.
 
 interface ClipEntry { id: string; offsetInGroup: number }
 interface Group { name: string; clips: ClipEntry[]; duration: number }
 
+const single = (name: string, id: string): Group => ({
+  name,
+  clips: [{ id, offsetInGroup: 0 }],
+  duration: DUR[id],
+});
+
 const groups: Group[] = [
-  {
-    name: "Title Card",
-    clips: [{ id: "scene0-mai-intro", offsetInGroup: 0 }],
-    duration: DUR["scene0-mai-intro"], // 7.03
-  },
-  {
-    name: "Scene 1",
-    clips: [
-      { id: "scene0-title", offsetInGroup: 0 },
-      { id: "scene1-problems", offsetInGroup: DUR["scene0-title"] }, // 4.76
-    ],
-    duration: DUR["scene0-title"] + DUR["scene1-problems"], // 18.40
-  },
-  {
-    name: "Scene 2 Intro",
-    clips: [{ id: "scene2-solution", offsetInGroup: 0 }],
-    duration: DUR["scene2-solution"], // 15.31
-  },
-  {
-    name: "Scene 2",
-    clips: [
-      { id: "scene2-discover", offsetInGroup: S2_OFF.discover },
-      { id: "scene2-connect", offsetInGroup: S2_OFF.connect },
-      { id: "scene2-resolve", offsetInGroup: S2_OFF.resolve },
-      { id: "scene2-ask", offsetInGroup: S2_OFF.ask },
-    ],
-    duration: S2_OFF.ask + DUR["scene2-ask"], // 43.25
-  },
-  {
-    name: "Scene 3A",
-    clips: [
-      { id: "scene3a-mai", offsetInGroup: 0 },
-      { id: "scene3a-mai-config", offsetInGroup: S3A_CFG },
-    ],
-    duration: S3A_CFG + DUR["scene3a-mai-config"], // 28.40
-  },
-  {
-    name: "Scene 4",
-    clips: [{ id: "scene4-knowledgegraph", offsetInGroup: 0 }],
-    duration: DUR["scene4-knowledgegraph"], // 28.00
-  },
-  {
-    name: "Scene 5 Intro",
-    clips: [{ id: "scene5-intro", offsetInGroup: 0 }],
-    duration: DUR["scene5-intro"], // 8.84
-  },
-  {
-    name: "Scene 5",
-    clips: [
-      { id: "scene5-title", offsetInGroup: S5_OFF.title },
-      { id: "scene5-combine", offsetInGroup: S5_OFF.combine },
-      { id: "scene5-qofe", offsetInGroup: S5_OFF.qofe },
-      { id: "scene5-ebitda", offsetInGroup: S5_OFF.ebitda },
-      { id: "scene5-xsell", offsetInGroup: S5_OFF.xsell },
-      { id: "scene5-backoffice", offsetInGroup: S5_OFF.backoffice },
-    ],
-    duration: S5_OFF.backoffice + DUR["scene5-backoffice"], // 43.04
-  },
-  {
-    name: "Scene 6",
-    clips: [{ id: "scene6-closing", offsetInGroup: 0 }],
-    duration: DUR["scene6-closing"], // 15.08
-  },
+  single("Title Card", "scene0-mai-intro"),
+  single("Scene 1", "scene1-problems"),
+  single("Scene 2 Intro", "scene2-solution"),
+  single("Scene 2", "scene2-all"),
+  single("Scene 3A", "scene3a-all"),
+  single("Scene 4", "scene4-knowledgegraph"),
+  single("Scene 5 Intro", "scene5-intro"),
+  single("Scene 5", "scene5-all"),
+  single("Scene 6", "scene6-deploy"),
+  single("Scene 7", "scene7-closing"),
 ];
 
 // ─── Resolve absolute timeline ────────────────────────────────

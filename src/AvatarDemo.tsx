@@ -23,58 +23,32 @@ const C = {
 // This is the SINGLE SOURCE OF TRUTH for timing.
 // Change a script → regen clip → update duration here → everything reflows.
 const D: Record<string, number> = {
-  "scene0-mai-intro": 7.03,
-  "scene0-title": 4.76,
-  "scene1-problems": 13.64,
-  "scene2-solution": 15.31,
-  "scene2-discover": 10.0,
-  "scene2-connect": 7.0,
-  "scene2-resolve": 7.8,
-  "scene2-ask": 13.75,
-  "scene3a-mai": 15.44,
-  "scene3a-mai-config": 12.4,
-  "scene4-knowledgegraph": 28.0,
-  "scene5-intro": 8.84,
-  "scene5-title": 16.16,
-  "scene5-combine": 3.91,
-  "scene5-qofe": 4.16,
-  "scene5-ebitda": 8.04,
-  "scene5-xsell": 4.4,
-  "scene5-backoffice": 4.04,
-  "scene6-closing": 15.08,
+  "scene0-mai-intro": 7.00,
+  "scene1-problems": 15.50,
+  "scene2-solution": 13.40,
+  "scene2-all": 39.43,
+  "scene3a-all": 24.20,
+  "scene4-knowledgegraph": 17.06,
+  "scene5-intro": 9.76,
+  "scene5-all": 34.40,
+  "scene6-deploy": 11.47,
+  "scene7-closing": 9.92,
 };
 
 // ─── Narration groups → visual scenes ─────────────────────────
-// Speech drives timing. Each group's duration = time from first
-// clip start to last clip end (including internal gaps).
-// Visual scene persists for the full group duration.
+// Each group = one D-ID clip. Speech drives timing.
 
-// Group helper: clips are back-to-back unless an explicit gap is given
-const seq = (...ids: string[]) => ids.reduce((t, id) => t + D[id], 0);
-
-// Internal offsets within Scene 2 (timed to visual animation)
-const S2_OFFSETS = { discover: 1.5, connect: 12.5, resolve: 20.5, ask: 29.5 };
-const s2GroupDur = S2_OFFSETS.ask + D["scene2-ask"]; // 29.5 + 13.75 = 43.25
-
-// Internal offset within Scene 3A
-const S3A_CONFIG_OFFSET = 16.0;
-const s3aGroupDur = S3A_CONFIG_OFFSET + D["scene3a-mai-config"]; // 16 + 12.4 = 28.4
-
-// Internal offsets within Scene 5 (timed to per-slide visuals)
-const S5_OFFSETS = { title: 0, combine: 16, qofe: 21, ebitda: 26, xsell: 34, backoffice: 39 };
-const s5GroupDur = S5_OFFSETS.backoffice + D["scene5-backoffice"]; // 39 + 4.04 = 43.04
-
-// Group durations (seconds) — speech-driven
 const G = {
-  titleCard: D["scene0-mai-intro"],                         // 7.03
-  scene1: D["scene0-title"] + D["scene1-problems"],         // 18.40
-  scene2i: D["scene2-solution"],                             // 15.31
-  scene2: s2GroupDur,                                        // 43.25
-  scene3a: s3aGroupDur,                                      // 28.40
-  scene4: D["scene4-knowledgegraph"],                        // 28.00
-  scene5i: D["scene5-intro"],                                // 8.84
-  scene5: s5GroupDur,                                        // 43.04
-  scene6: D["scene6-closing"],                               // 15.08
+  titleCard: D["scene0-mai-intro"],
+  scene1: D["scene1-problems"],
+  scene2i: D["scene2-solution"],
+  scene2: D["scene2-all"],
+  scene3a: D["scene3a-all"],
+  scene4: D["scene4-knowledgegraph"],
+  scene5i: D["scene5-intro"],
+  scene5: D["scene5-all"],
+  scene6: D["scene6-deploy"],
+  scene7: D["scene7-closing"],
 };
 
 // Cumulative start times (frames @30fps)
@@ -84,7 +58,7 @@ const starts = Object.values(G).reduce<number[]>(
   [0],
 );
 const [
-  T_TITLE, T_S1, T_S2I, T_S2, T_S3A, T_S4, T_S5I, T_S5, T_S6, T_END,
+  T_TITLE, T_S1, T_S2I, T_S2, T_S3A, T_S4, T_S5I, T_S5, T_S6, T_S7, T_END,
 ] = starts;
 
 export const AVATAR_FRAMES = T_END;
@@ -92,7 +66,7 @@ export const AVATAR_FRAMES = T_END;
 // ─── Avatar PIP ───────────────────────────────────────────────
 const AvatarBubble: React.FC = () => {
   const { height } = useVideoConfig();
-  const bubbleH = Math.round(height * 0.25);
+  const bubbleH = Math.round(height * 0.3125); // 25% larger than original 0.25
   const bubbleW = Math.round(bubbleH * 0.75);
 
   return (
@@ -242,6 +216,9 @@ export const AvatarDemo: React.FC = () => {
       </Sequence>
       <Sequence from={T_S6} durationInFrames={f(G.scene6)}>
         <SceneVideo file="scene6.mp4" />
+      </Sequence>
+      <Sequence from={T_S7} durationInFrames={f(G.scene7)}>
+        <SceneVideo file="scene7.mp4" />
       </Sequence>
 
       {/* Avatar PIP — single combined video */}
