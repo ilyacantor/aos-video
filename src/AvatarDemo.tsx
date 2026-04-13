@@ -1,6 +1,7 @@
 import React from "react";
 import {
   AbsoluteFill,
+  Audio,
   Sequence,
   OffthreadVideo,
   Img,
@@ -20,23 +21,26 @@ const C = {
 };
 
 // ─── D-ID clip durations (seconds, from MP4 headers) ──────────
-// This is the SINGLE SOURCE OF TRUTH for timing.
-// Change a script → regen clip → update duration here → everything reflows.
+// SINGLE SOURCE OF TRUTH for timing. Clips are audio-driven (Matilda MP3
+// uploaded to D-ID /audios). Change script → regen Matilda → regen clip →
+// update duration here → everything reflows.
 const D: Record<string, number> = {
-  "scene0-mai-intro": 7.00,
-  "scene1-problems": 15.50,
-  "scene2-solution": 13.40,
-  "scene2-all": 39.43,
-  "scene3a-all": 24.20,
-  "scene4-knowledgegraph": 17.06,
-  "scene5-intro": 9.76,
-  "scene5-all": 34.40,
-  "scene6-deploy": 11.47,
-  "scene7-closing": 9.92,
+  "scene0-mai-intro": 5.43,
+  "scene1-problems": 26.98,
+  "scene2-solution": 13.64,
+  "scene2-all": 39.00,
+  "scene3a-all": 23.16,
+  "scene4-knowledgegraph": 14.24,
+  "scene5-intro": 9.43,
+  "scene5-all": 33.80,
+  "scene6-deploy": 40.68,
+  "scene7-closing": 7.38,
 };
 
 // ─── Narration groups → visual scenes ─────────────────────────
 // Each group = one D-ID clip. Speech drives timing.
+
+const TAIL_HOLD = 3.0; // Hold closing slide after Mai finishes
 
 const G = {
   titleCard: D["scene0-mai-intro"],
@@ -48,7 +52,7 @@ const G = {
   scene5i: D["scene5-intro"],
   scene5: D["scene5-all"],
   scene6: D["scene6-deploy"],
-  scene7: D["scene7-closing"],
+  scene7: D["scene7-closing"] + TAIL_HOLD,
 };
 
 // Cumulative start times (frames @30fps)
@@ -84,6 +88,7 @@ const AvatarBubble: React.FC = () => {
       }}
     >
       <OffthreadVideo
+        muted
         src={staticFile("avatar/avatar-combined.mp4")}
         style={{
           width: "100%",
@@ -177,16 +182,131 @@ const TitleCard: React.FC = () => {
 };
 
 // ─── Scene video segment (freezes on last frame if narration > visual) ─
-const SceneVideo: React.FC<{ file: string }> = ({ file }) => (
+// `startFrom` skips leading frames of the source file — used to strip a
+// base video's built-in fade-in when the preceding scene ends on content
+// (e.g. scene3a.mp4 fades in from C.bg, which looks like a blank wall
+// after scene2's knowledge-graph hands off).
+const SceneVideo: React.FC<{ file: string; startFrom?: number }> = ({
+  file,
+  startFrom,
+}) => (
   <OffthreadVideo
     src={staticFile(`scenes/${file}`)}
+    startFrom={startFrom}
     muted
     style={{ width: "100%", height: "100%" }}
   />
 );
 
+// ─── Static full-frame image (matches 16:9) ────────────────────
+const StaticSlide: React.FC<{ file: string; fit?: "cover" | "contain" }> = ({
+  file,
+  fit = "cover",
+}) => (
+  <AbsoluteFill style={{ backgroundColor: C.bg }}>
+    <Img
+      src={staticFile(file)}
+      style={{ width: "100%", height: "100%", objectFit: fit }}
+    />
+  </AbsoluteFill>
+);
+
+// ─── Scene 5 Intro — faded full-frame background ──────────────
+const FadedBackground: React.FC<{ file: string; opacity?: number }> = ({
+  file,
+  opacity = 0.35,
+}) => (
+  <AbsoluteFill style={{ backgroundColor: C.bg }}>
+    <Img
+      src={staticFile(file)}
+      style={{
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        opacity,
+      }}
+    />
+  </AbsoluteFill>
+);
+
+// ─── Scene 5 — slides timed to scene5-all speech breakpoints ──
+// Breakpoints from `silencedetect -30dB:0.35` on the Matilda MP3 —
+// mid-silence transitions so Mai's next sentence lands on the new visual.
+const Scene5Slides: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const XFADE = 0.25;
+
+  const slides = [
+    { start: 0,     end: 12.10, file: "MA.png" },
+    { start: 12.10, end: 15.88, file: "combine_fs.png" },
+    { start: 15.88, end: 20.02, file: "qofe2.png" },
+    { start: 20.02, end: 27.10, file: "ebitda2.png" },
+    { start: 27.10, end: 29.85, file: "x-sell2.png" },
+    { start: 29.85, end: 34.00, file: "backoffice2.png" },
+  ];
+
+  return (
+    <AbsoluteFill style={{ backgroundColor: C.bg }}>
+      {slides.map((s, i) => {
+        const fadeIn =
+          i === 0
+            ? 1
+            : interpolate(
+                frame,
+                [(s.start - XFADE) * fps, s.start * fps],
+                [0, 1],
+                { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+              );
+        const fadeOut =
+          i === slides.length - 1
+            ? 1
+            : interpolate(
+                frame,
+                [s.end * fps, (s.end + XFADE) * fps],
+                [1, 0],
+                { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+              );
+        const opacity = Math.min(fadeIn, fadeOut);
+        return (
+          <Img
+            key={s.file}
+            src={staticFile(s.file)}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              opacity,
+            }}
+          />
+        );
+      })}
+    </AbsoluteFill>
+  );
+};
+
+// ─── Audio tracks — individual Matilda MP3s per scene ────────
+// Always rendered (both avatar and non-avatar variants). The PIP
+// video is muted so this is the only audio source.
+const TRACKS: { id: keyof typeof D; from: number }[] = [
+  { id: "scene0-mai-intro",      from: T_TITLE },
+  { id: "scene1-problems",       from: T_S1 },
+  { id: "scene2-solution",       from: T_S2I },
+  { id: "scene2-all",            from: T_S2 },
+  { id: "scene3a-all",           from: T_S3A },
+  { id: "scene4-knowledgegraph", from: T_S4 },
+  { id: "scene5-intro",          from: T_S5I },
+  { id: "scene5-all",            from: T_S5 },
+  { id: "scene6-deploy",         from: T_S6 },
+  { id: "scene7-closing",        from: T_S7 },
+];
+
 // ─── Main composition ─────────────────────────────────────────
-export const AvatarDemo: React.FC = () => {
+export const AvatarDemo: React.FC<{ showAvatar?: boolean }> = ({
+  showAvatar = true,
+}) => {
   return (
     <AbsoluteFill style={{ backgroundColor: C.bg }}>
       {/* Visual scenes — each persists for its narration group's duration */}
@@ -194,7 +314,7 @@ export const AvatarDemo: React.FC = () => {
         <TitleCard />
       </Sequence>
       <Sequence from={T_S1} durationInFrames={f(G.scene1)}>
-        <SceneVideo file="scene1.mp4" />
+        <StaticSlide file="new-problem.png" />
       </Sequence>
       <Sequence from={T_S2I} durationInFrames={f(G.scene2i)}>
         <SceneVideo file="scene2i.mp4" />
@@ -202,29 +322,49 @@ export const AvatarDemo: React.FC = () => {
       <Sequence from={T_S2} durationInFrames={f(G.scene2)}>
         <SceneVideo file="scene2.mp4" />
       </Sequence>
-      <Sequence from={T_S3A} durationInFrames={f(G.scene3a)}>
-        <SceneVideo file="scene3a.mp4" />
+      {/* scene3a.mp4 has two sub-scenes with a hard cut at local ~14s.
+          Split the visual sequence at the narration silence (10.72s into
+          scene3a-all.mp3, between "plain English." and "You can also ask
+          me to make changes…") so the visual cut lands on the verbal
+          pause instead of mid-sentence. */}
+      <Sequence from={T_S3A} durationInFrames={f(10.72)}>
+        <SceneVideo file="scene3a.mp4" startFrom={10} />
+      </Sequence>
+      <Sequence
+        from={T_S3A + f(10.72)}
+        durationInFrames={f(G.scene3a - 10.72)}
+      >
+        <SceneVideo file="scene3a.mp4" startFrom={420} />
       </Sequence>
       <Sequence from={T_S4} durationInFrames={f(G.scene4)}>
         <SceneVideo file="scene4.mp4" />
       </Sequence>
       <Sequence from={T_S5I} durationInFrames={f(G.scene5i)}>
-        <SceneVideo file="scene5i.mp4" />
+        <FadedBackground file="convergence_ig.jpeg" />
       </Sequence>
       <Sequence from={T_S5} durationInFrames={f(G.scene5)}>
-        <SceneVideo file="scene5.mp4" />
+        <Scene5Slides />
       </Sequence>
       <Sequence from={T_S6} durationInFrames={f(G.scene6)}>
-        <SceneVideo file="scene6.mp4" />
+        <StaticSlide file="days.png" />
       </Sequence>
       <Sequence from={T_S7} durationInFrames={f(G.scene7)}>
-        <SceneVideo file="scene7.mp4" />
+        <StaticSlide file="closing-new.png" />
       </Sequence>
 
-      {/* Avatar PIP — single combined video */}
-      <Sequence from={0} durationInFrames={AVATAR_FRAMES}>
-        <AvatarBubble />
-      </Sequence>
+      {/* Audio — pristine Matilda MP3s, identical for both variants */}
+      {TRACKS.map((t) => (
+        <Sequence key={t.id} from={t.from} durationInFrames={f(D[t.id])}>
+          <Audio src={staticFile(`avatar/audio/${t.id}.mp3`)} />
+        </Sequence>
+      ))}
+
+      {/* Avatar PIP — muted video overlay, only when showAvatar */}
+      {showAvatar && (
+        <Sequence from={0} durationInFrames={AVATAR_FRAMES}>
+          <AvatarBubble />
+        </Sequence>
+      )}
     </AbsoluteFill>
   );
 };

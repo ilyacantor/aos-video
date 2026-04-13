@@ -19,16 +19,16 @@ const outFile = resolve(avatarDir, "avatar-combined.mp4");
 
 // ─── Clip durations (seconds) — MUST match AvatarDemo.tsx D map ─
 const DUR: Record<string, number> = {
-  "scene0-mai-intro": 7.00,
-  "scene1-problems": 15.50,
-  "scene2-solution": 13.40,
-  "scene2-all": 39.43,
-  "scene3a-all": 24.20,
-  "scene4-knowledgegraph": 17.06,
-  "scene5-intro": 9.76,
-  "scene5-all": 34.40,
-  "scene6-deploy": 11.47,
-  "scene7-closing": 9.92,
+  "scene0-mai-intro": 5.43,
+  "scene1-problems": 26.98,
+  "scene2-solution": 13.64,
+  "scene2-all": 39.00,
+  "scene3a-all": 23.16,
+  "scene4-knowledgegraph": 14.24,
+  "scene5-intro": 9.43,
+  "scene5-all": 33.80,
+  "scene6-deploy": 40.68,
+  "scene7-closing": 7.38,
 };
 
 // ─── Narration groups (mirrors AvatarDemo.tsx) ────────────────
@@ -43,6 +43,8 @@ const single = (name: string, id: string): Group => ({
   duration: DUR[id],
 });
 
+const TAIL_HOLD = 3.0; // Must match AvatarDemo.tsx — pads PIP on last clip
+
 const groups: Group[] = [
   single("Title Card", "scene0-mai-intro"),
   single("Scene 1", "scene1-problems"),
@@ -53,7 +55,11 @@ const groups: Group[] = [
   single("Scene 5 Intro", "scene5-intro"),
   single("Scene 5", "scene5-all"),
   single("Scene 6", "scene6-deploy"),
-  single("Scene 7", "scene7-closing"),
+  {
+    name: "Scene 7",
+    clips: [{ id: "scene7-closing", offsetInGroup: 0 }],
+    duration: DUR["scene7-closing"] + TAIL_HOLD,
+  },
 ];
 
 // ─── Resolve absolute timeline ────────────────────────────────
