@@ -14,22 +14,47 @@ import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ffmpeg = resolve(__dirname, "../../node_modules/ffmpeg-static/ffmpeg");
+const ffprobe = resolve(__dirname, "../../node_modules/ffprobe-static/bin/linux/x64/ffprobe");
 const avatarDir = resolve(__dirname, "../../public/avatar");
 const outFile = resolve(avatarDir, "avatar-combined.mp4");
 
-// ─── Clip durations (seconds) — MUST match AvatarDemo.tsx D map ─
-const DUR: Record<string, number> = {
-  "scene0-mai-intro": 5.43,
-  "scene1-problems": 26.98,
-  "scene2-solution": 13.64,
-  "scene2-all": 39.00,
-  "scene3a-all": 23.16,
-  "scene4-knowledgegraph": 14.24,
-  "scene5-intro": 9.43,
-  "scene5-all": 33.80,
-  "scene6-deploy": 40.68,
-  "scene7-closing": 7.38,
+// ─── Clip durations — read LIVE from MP4 headers, no stale map ──
+// Single source of truth: the MP4 files themselves. This prevents
+// the concat timeline from ever diverging from AvatarDemo.tsx D map
+// (which is itself filled in from these same MP4 headers).
+const clipIds = [
+  "scene0-mai-intro",
+  "scene1-problems",
+  "scene2-solution",
+  "scene2-all",
+  "scene3a-all",
+  "scene4-knowledgegraph",
+  "scene5-intro",
+  "scene5-all",
+  "scene6-deploy",
+  "scene7-closing",
+];
+
+const probeDuration = (id: string): number => {
+  const mp4 = resolve(avatarDir, `${id}.mp4`);
+  const out = execSync(
+    `"${ffmpeg}" -i "${mp4}" 2>&1 | grep Duration | head -1`,
+    { shell: "/bin/bash", encoding: "utf8" },
+  );
+  // Duration: 00:00:54.28, start: ...
+  const m = out.match(/Duration:\s+(\d+):(\d+):(\d+\.\d+)/);
+  if (!m) throw new Error(`Could not parse duration for ${id}: ${out}`);
+  const [, hh, mm, ss] = m;
+  return Number(hh) * 3600 + Number(mm) * 60 + Number(ss);
 };
+
+const DUR: Record<string, number> = Object.fromEntries(
+  clipIds.map((id) => [id, probeDuration(id)]),
+);
+
+console.log("Probed durations:");
+for (const id of clipIds) console.log(`  ${id.padEnd(24)} ${DUR[id].toFixed(2)}s`);
+console.log();
 
 // ─── Narration groups (mirrors AvatarDemo.tsx) ────────────────
 // One merged D-ID clip per group — zero internal gaps.
@@ -47,7 +72,12 @@ const TAIL_HOLD = 3.0; // Must match AvatarDemo.tsx — pads PIP on last clip
 
 const groups: Group[] = [
   single("Title Card", "scene0-mai-intro"),
-  single("Scene 1", "scene1-problems"),
+  {
+    // +0.15 = breath gap before "And here's" — matches D["scene1-problems"] in AvatarDemo.tsx
+    name: "Scene 1",
+    clips: [{ id: "scene1-problems", offsetInGroup: 0 }],
+    duration: DUR["scene1-problems"] + 0.15,
+  },
   single("Scene 2 Intro", "scene2-solution"),
   single("Scene 2", "scene2-all"),
   single("Scene 3A", "scene3a-all"),

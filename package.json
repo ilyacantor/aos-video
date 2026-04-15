@@ -30,9 +30,7 @@
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion bundle --public-dir=public",
-    "render": "remotion render aos-movie out/aos-movie.mp4",
-    "render:avatar": "remotion render avatar-demo out/aos-movie-avatar.mp4",
-    "render:both": "npm run render && npm run render:avatar",
+    "render": "remotion render avatar-demo out/aos-movie-avatar.mp4 --timeout=120000 --concurrency=4",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"
   },

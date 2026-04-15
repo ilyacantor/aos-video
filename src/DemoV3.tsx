@@ -21,7 +21,7 @@ const lerp = (
 // ═══════════════════════════════════════════════════════════
 // DemoV3: Knowledge Graph — 3D zoom-in + frame-synced clicks
 // ═══════════════════════════════════════════════════════════
-const S4_DUR = 14;
+const S4_DUR = 15;
 export const DEMO_V3_FRAMES = S4_DUR * 30;
 
 // Click sequence: [startSec, endSec, nodeId, cursorX%, cursorY%]
@@ -106,7 +106,7 @@ export const DemoV3: React.FC = () => {
   const isClicking = activeClick && sec >= activeClick[0] && sec < activeClick[0] + 0.15;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: "#000000" }}>
+    <AbsoluteFill style={{ backgroundColor: "#1a1a1a" }}>
       <div
         style={{
           position: "absolute",

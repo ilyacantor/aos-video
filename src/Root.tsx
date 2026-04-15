@@ -4,19 +4,14 @@ import { AosDemo, AOS_DEMO_DURATION } from "./AosDemo";
 import { StackedPlanes } from "./StackedPlanes";
 import { AosDemoProd, TOTAL_FRAMES } from "./aos-demo";
 import { AvatarDemo, AVATAR_FRAMES } from "./AvatarDemo";
+import { DemoV3, DEMO_V3_FRAMES } from "./DemoV3";
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
-      <Composition
-        id="aos-movie"
-        component={AvatarDemo}
-        defaultProps={{ showAvatar: false }}
-        durationInFrames={AVATAR_FRAMES}
-        fps={30}
-        width={1920}
-        height={1080}
-      />
+      {/* RETIRED: aos-movie composition (no-avatar variant) was removed
+          on 2026-04-14. Ilya only ships the avatar-demo build. Do not
+          re-register this composition or add a render script for it. */}
       <Composition
         id="avatar-demo"
         component={AvatarDemo}
@@ -47,6 +42,14 @@ export const RemotionRoot: React.FC = () => {
         id="AosDemoProd"
         component={AosDemoProd}
         durationInFrames={TOTAL_FRAMES}
+        fps={30}
+        width={1920}
+        height={1080}
+      />
+      <Composition
+        id="demov3"
+        component={DemoV3}
+        durationInFrames={DEMO_V3_FRAMES}
         fps={30}
         width={1920}
         height={1080}

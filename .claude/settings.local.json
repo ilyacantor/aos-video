@@ -25,7 +25,8 @@
       "Bash(export PATH=\"/c/Users/ilyac/AppData/Local/nvm/v22.22.2:$PATH\")",
       "Bash(npx tsc:*)",
       "Bash(node -e \"const d=[];process.stdin.on\\(''''data'''',c=>d.push\\(c\\)\\);process.stdin.on\\(''''end'''',\\(\\)=>{try{const j=JSON.parse\\(Buffer.concat\\(d\\).toString\\(\\)\\);console.log\\(JSON.stringify\\(j,null,2\\).slice\\(0,500\\)\\)}catch\\(e\\){console.log\\(Buffer.concat\\(d\\).toString\\(\\).slice\\(0,500\\)\\)}}\\)\")",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(echo \"PID: $!\")"
     ]
   }
 }
