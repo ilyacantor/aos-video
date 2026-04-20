@@ -4,7 +4,7 @@ Project rules for any agent (Claude or otherwise) editing this Remotion composit
 
 ## Sacrosanct cut registry
 
-`remotion_cut_registry.md` (repo root) is the single source of truth for every visual cut tied to speech — both code constants in `src/AvatarDemo.tsx` and base-video hard-cuts in `public/scenes/*.mp4`. The file is **append-only**: entries are marked RETIRED with a date, never deleted.
+`remotion_cut_registry.md` (repo root) is the single source of truth for every visual cut tied to speech — both code constants in `src/AosDemo.tsx` and base-video hard-cuts in `public/scenes/*.mp4`. The file is **append-only**: entries are marked RETIRED with a date, never deleted.
 
 ### Mandatory workflow
 
@@ -22,6 +22,6 @@ Edit → Remotion studio (port 3011, hot reload) → user scrubs → only then `
 
 ## Single sources of truth
 
-- **Clip durations:** `src/AvatarDemo.tsx` `D` map (lines 27–38) — derived from on-disk MP4/MP3 headers. `scripts/did-test/concat-avatar.ts` re-probes live, never reads a stale constant.
+- **Clip durations:** `src/AosDemo.tsx` `D` map (lines 27–38) — derived from on-disk MP4/MP3 headers. `scripts/did-test/concat-avatar.ts` re-probes live, never reads a stale constant.
 - **Scene scripts:** `scripts/did-test/avatar-scenes.ts` `SCENES` array — consumed by both Matilda TTS and D-ID avatar generation.
 - **Cut↔speech bindings:** `remotion_cut_registry.md` (this file's companion).

@@ -16,6 +16,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "remotion": "4.0.447",
+    "simple-icons": "^16.16.0",
     "tailwindcss": "4.0.0"
   },
   "devDependencies": {
@@ -30,7 +31,7 @@
   "scripts": {
     "dev": "remotion studio",
     "build": "remotion bundle --public-dir=public",
-    "render": "remotion render avatar-demo out/aos-movie-avatar.mp4 --timeout=120000 --concurrency=4",
+    "render": "remotion render aos-demo out/aos-movie-avatar.mp4 --timeout=120000 --concurrency=4",
     "upgrade": "remotion upgrade",
     "lint": "eslint src && tsc"
   },

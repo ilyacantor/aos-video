@@ -19,20 +19,17 @@ const C = {
 
 // ─── Beat boundaries (seconds) ────────────────────────────────
 // Keyed to silencedetect -35dB:0.4 output on scene1-problems.mp3
-// (regen 2026-04-18, total 64.78s):
-//   b1 0.0  — "For twenty years… coherent picture."
-//   b2 22.0 — "Then comes the next wave… faster than any human…"
-//   b3 42.0 — "Orchestration alone doesn't solve it… better coordination."
-//   b4 50.0 — "Starting over isn't an option. Waiting isn't either."
-//   b5 54.0 — "That's the gap autonomous closes… shared language."
-const B = { b2: 22.0, b3: 42.0, b4: 50.0, b5: 54.0 };
+// (regen 2026-04-20, total 55.07s — trimmed b4 + tail):
+//   b1 0.0   — "For twenty years… coherent picture."
+//   b2 24.6  — "Then comes the next wave… faster than any human…"
+//   b3 39.3  — "Orchestration alone… better coordination."
+//   b4 45.0  — desaturate (dead-end feel, late b3)
+//   b5 49.4  — "That's the gap autonomous closes."
+const B = { b2: 24.6, b3: 39.3, b4: 45.0, b5: 49.4 };
 
-// Suck-vanish point: logos + agents funnel here between b4-end and b5-start.
-// Placed just right-of-center at mid-screen so the motion reads directional
-// without implying an actual pipe.
 const SUCK = { x: 1720, y: 540 };
-const SUCK_START = 52.8;
-const SUCK_END = 54.4;
+const SUCK_START = 47.8;
+const SUCK_END = 49.4;
 
 // Top-right counter keepout — logos must not land on top of the "900
 // APPLICATIONS" HUD. Matches AppCounter's right:64/top:48 footprint plus a
@@ -268,8 +265,8 @@ const AGENTS_DATA: Agent[] = (() => {
   return Array.from({ length: AGENT_COUNT }).map((_, i) => ({
     homeX: 200 + (i % 6) * 300 + (rand() - 0.5) * 50,
     homeY: 180 + Math.floor(i / 6) * 175 + (rand() - 0.5) * 40,
-    // Accelerating entry — slow first 4, then rapid cluster
-    appear: B.b2 + 0.6 + (i < 4 ? i * 1.4 : 5.6 + (i - 4) * 0.65),
+    // Accelerating entry — slow first 4, then rapid cluster (scaled to b2→b3 gap)
+    appear: B.b2 + 0.6 + (i < 4 ? i * 1.0 : 4.1 + (i - 4) * 0.48),
     hue: hues[i % hues.length],
     brand:
       i === 0 ? "openai" :

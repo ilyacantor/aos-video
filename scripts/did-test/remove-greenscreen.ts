@@ -1,6 +1,6 @@
 /**
  * Converts green screen MP4 avatar clips → WebM with alpha transparency.
- * Output: public/avatar/*.webm (used by AvatarDemo with <OffthreadVideo transparent>)
+ * Output: public/avatar/*.webm (used by AosDemo with <OffthreadVideo transparent>)
  */
 import { execSync } from "child_process";
 import { readdirSync, existsSync } from "fs";

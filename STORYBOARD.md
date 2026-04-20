@@ -1,8 +1,8 @@
 # AOS Demo — Storyboard
 
-**Active composition:** `avatar-demo` (`AvatarDemo` with Mai PIP) — single output, single render target. Script text flows: `scripts/did-test/avatar-scenes.ts` → ElevenLabs Matilda MP3 → D-ID Lily audio-driven MP4 → Remotion composition.
+**Active composition:** `aos-demo` (`AosDemo` with Mai PIP) — single output, single render target. Script text flows: `scripts/did-test/avatar-scenes.ts` → ElevenLabs Matilda MP3 → D-ID Lily audio-driven MP4 → Remotion composition.
 
-**RETIRED 2026-04-14:** The `aos-movie` (no-PIP) variant was removed. Do not re-register it in `Root.tsx` or re-add `render` / `render:both` scripts. All edits and renders land only on `avatar-demo`. `npm run render` = avatar-demo.
+**RETIRED 2026-04-14:** The `aos-movie` (no-PIP) variant was removed. Do not re-register it in `Root.tsx` or re-add `render` / `render:both` scripts. All edits and renders land only on `aos-demo`. `npm run render` = aos-demo.
 
 **MAINTENANCE RULE:** This file MUST be updated in the same edit as any audio trim, D map bump, scene regen, breath gap, or base-video re-export. Narration blocks below contain the **full text** of each clip — not snippets or references. See `feedback_sync_golden_rules.md` Rule 4.
 
@@ -10,7 +10,7 @@
 
 ## Timeline — Speech-Driven
 
-Speech is the single source of truth. Visual scenes persist until narration finishes. Durations come from the `D` map in `src/AvatarDemo.tsx` (probed from `public/avatar/*.mp4` headers).
+Speech is the single source of truth. Visual scenes persist until narration finishes. Durations come from the `D` map in `src/AosDemo.tsx` (probed from `public/avatar/*.mp4` headers).
 
 **Total runtime: 3:46.2** (current state after the 2026-04-15 Mai quip additions to scene3a + scene6).
 
@@ -86,12 +86,12 @@ The former Stage 5 "M&A, de-risked" was removed 2026-04-14 from both narration (
 
 **Mai quip (2026-04-15):** "No day-one surprises." — prep/pragmatism note, appended after "all human supervised." Added +2.40s to scene6-deploy (was 40.68 → 43.08). Cascades scene7 forward by 2.40s.
 
-**Card beats** (`CARD_BEATS` in AvatarDemo.tsx line 543): **6.20 / 14.35 / 22.45 / 31.15s** (bumped 2026-04-15 post-quip regen), bound to silence_ends after "Four reasons." / "no replatforming, no migration." / "not to hundreds of APIs." / "before you go live." All four beats land before the quip — beat 4 coincidentally stable.
+**Card beats** (`CARD_BEATS` in AosDemo.tsx line 543): **6.20 / 14.35 / 22.45 / 31.15s** (bumped 2026-04-15 post-quip regen), bound to silence_ends after "Four reasons." / "no replatforming, no migration." / "not to hundreds of APIs." / "before you go live." All four beats land before the quip — beat 4 coincidentally stable.
 
 **Closing tagline:** "Abstraction over extraction." floats in at 39.9s → 41.4s (was 37.5/39.0 pre-quip, +2.4s), holds until scene end at 43.08s. Mai's quip plays over the fully-visible tagline.
 
 ### Scene 7 — 3:34.4 → 3:46.2 — 11.9s (8.9s speech + 3.0s TAIL_HOLD)
-**Clip:** `scene7-closing` &nbsp;|&nbsp; **Visual:** `public/closing-new.png` static slide.
+**Clip:** `scene7-closing` &nbsp;|&nbsp; **Visual:** `public/closing.png` static slide.
 
 > AOS is changing the paradigm of enterprise technology, and how it's deployed. If you want to learn more, find us at autonomous dot tech.
 
@@ -104,7 +104,7 @@ The former Stage 5 "M&A, de-risked" was removed 2026-04-14 from both narration (
 1. Edit a script in `scripts/did-test/avatar-scenes.ts` (single source of truth).
 2. Regen Matilda MP3: `npx tsx scripts/did-test/generate-matilda.ts <clip-id> --force`.
 3. Regen D-ID clip: `npx tsx scripts/did-test/generate-avatar.ts <clip-id> --force`.
-4. Update `D` map in `src/AvatarDemo.tsx` from the new MP4 header.
+4. Update `D` map in `src/AosDemo.tsx` from the new MP4 header.
 5. Rebuild concat: `npx tsx scripts/did-test/concat-avatar.ts`.
 6. **Update this STORYBOARD.md** — new From/To/duration/text for the affected scene AND cumulative recalc for all downstream scenes.
 7. **Update `remotion_cut_registry.md`** if any cut bindings changed.
@@ -118,7 +118,7 @@ The former Stage 5 "M&A, de-risked" was removed 2026-04-14 from both narration (
 | `scripts/did-test/generate-matilda.ts` | ElevenLabs Matilda TTS → `public/avatar/audio/*.mp3` |
 | `scripts/did-test/generate-avatar.ts` | Uploads MP3s to D-ID `/audios` → audio-driven Lily clips in `public/avatar/*.mp4` |
 | `scripts/did-test/concat-avatar.ts` | Concatenates clips into `avatar-combined.mp4` (+ 3s tail hold, + breath gaps) |
-| `src/AvatarDemo.tsx` | Remotion composition — `D` map is the duration source of truth |
+| `src/AosDemo.tsx` | Remotion composition — `D` map is the duration source of truth |
 | `public/avatar/audio/*.mp3` | Matilda voice tracks, played by `<Audio>` BG layer |
 | `public/avatar/*.mp4` | D-ID audio-driven Lily clips (per-clip input to `concat-avatar.ts`) |
 | `public/avatar/avatar-combined.mp4` | Concatenated avatar video, muted `OffthreadVideo` PIP source |
@@ -136,5 +136,5 @@ The former Stage 5 "M&A, de-risked" was removed 2026-04-14 from both narration (
 | `public/x-sell2.png` | Scene 5 slide 4 — cross-sell thesis |
 | `public/backoffice2.png` | Scene 5 slide 5 — backoffice overlap |
 | `public/days.png` | Scene 6 static slide |
-| `public/closing-new.png` | Scene 7 static slide |
+| `public/closing.png` | Scene 7 static slide |
 | `public/scenes/scene{1,2i,2,3a,4}.mp4` | Base video segments for scenes 1–4 |

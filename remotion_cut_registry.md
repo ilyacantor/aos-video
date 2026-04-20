@@ -3,24 +3,29 @@
 Append-only ledger of every visual cut tied to speech. Update when you add a code constant or a base-video transition. **Never delete an entry — mark RETIRED with a date.**
 
 Two kinds of cut are tracked:
-- **Code constants** — `Sequence` splits, slide breakpoints, kinetic-typography stage windows in `src/AvatarDemo.tsx`.
+- **Code constants** — `Sequence` splits, slide breakpoints, kinetic-typography stage windows in `src/AosDemo.tsx`.
 - **Base-video hard-cuts** — scene changes baked into `public/scenes/*.mp4` by the upstream animator.
 
-## Code constants — src/AvatarDemo.tsx
+## Code constants — src/AosDemo.tsx
 
 | Constant | Value (s) | Audio file | Bound phoneme | Verified | Status |
 |---|---|---|---|---|---|
 | Scene3A split (pre-quip) | 10.72 | scene3a-all.mp3 | mid-silence between "plain English." and "You can also ask me to make changes…" | 2026-04-14 | RETIRED 2026-04-15 — "I speak fluent spreadsheet, too." quip inserted after "plain English."; binding topic preserved but silence position moved |
 | Scene3A split (post-quip, line 889) | 13.31 | scene3a-all.mp3 | mid-silence between "I speak fluent spreadsheet, too." and "You can also ask me to make changes…" — preserves topical break (answer questions → make changes) around base-video hard cut at frame 420 | 2026-04-15 | ACTIVE |
 | Scene5Slides breakpoints (pre-trim) | 13.42 / 18.65 / 22.80 / 28.26 / 32.59 | scene5-all.mp3 | silence_ends after "M&A, de-risked" / "across both companies" / "every adjustment flagged" / "tracked through close" / "across both customer books" | 2026-04-14 | RETIRED 2026-04-14 — "M&A, de-risked" deleted; binding for first breakpoint destroyed, others shifted -0.99s |
-| Scene5Slides breakpoints (post-trim, 240–246) | 12.44 / 17.66 / 21.82 / 27.27 / 31.60 | scene5-all.mp3 | silence_ends after "before it does" (trim splice) / "across both companies" / "every adjustment flagged" / "tracked through close" / "across both customer books" | 2026-04-14 | ACTIVE |
+| Scene5Slides breakpoints (post-trim, 240–246) | 12.44 / 17.66 / 21.82 / 27.27 / 31.60 | scene5-all.mp3 | silence_ends after "before it does" (trim splice) / "across both companies" / "every adjustment flagged" / "tracked through close" / "across both customer books" | 2026-04-14 | RETIRED 2026-04-15 — M&A narration replaced with rotisserie (bullet-only script); all five bound phonemes deleted from VO |
+| Scene5Slides breakpoints (rotisserie, 246–252) | 1.35 / 3.12 / 4.60 / 6.47 / 8.08 | scene5-all.mp3 | silence midpoints between "Here's what we automate." / "Unified financials." / "Quality of earnings." / "Proforma combined earnings." / "Cross-sell thesis." / "Backoffice overlap." — each bullet name lands on its own screenshot (combine_fs / qofe2 / ebitda2 / x-sell2 / backoffice2) | 2026-04-15 | ACTIVE |
+| Scene5Slides title card fade (254–258) | titleOp [0, 0.25, 1.10, 1.35] | scene5-all.mp3 | "Here's what we automate." cue: full through 1.10s, crossfades out by 1.35s as combine_fs fades in | 2026-04-15 | ACTIVE |
 | Scene5Intro stages (pre-trim) | s1[0.2,2.6] s2[2.8,5.8] s3[6.1,9.7] s4[9.9,12.2] s5[12.4,13.5] | scene5-all.mp3 | sentences "Seventy percent of M&A deals fail" / "real deal-breakers got lost in execution trivia" / "Convergence automates comprehension" / "Surface what should break the deal — before it does" / "M&A, de-risked" | 2026-04-14 | RETIRED 2026-04-14 — s5 sentence deleted from VO and visual |
-| Scene5Intro stages (post-trim, 327–330) | s1[0.2,2.6] s2[2.8,5.8] s3[6.1,9.7] s4[9.9,13.0] | scene5-all.mp3 | sentences "Seventy percent of M&A deals fail" / "real deal-breakers got lost in execution trivia" / "Convergence automates comprehension" / "Surface what should break the deal — before it does" | 2026-04-14 | ACTIVE |
-| Scene5Intro rootFade close | 12.44 | scene5-all.mp3 | crossfade with combine_fs.png at "Here's what we automate" speech start | 2026-04-14 | ACTIVE |
+| Scene5Intro stages (post-trim) | s1[0.2,2.6] s2[2.8,5.8] s3[6.1,9.7] s4[9.9,13.0] | scene5-all.mp3 | sentences "Seventy percent of M&A deals fail" / "real deal-breakers got lost in execution trivia" / "Convergence automates comprehension" / "Surface what should break the deal — before it does" | 2026-04-14 | RETIRED 2026-04-15 — M&A setup narration removed; Scene5Intro component deleted from AosDemo.tsx |
+| Scene5Intro rootFade close | 12.44 | scene5-all.mp3 | crossfade with combine_fs.png at "Here's what we automate" speech start | 2026-04-14 | RETIRED 2026-04-15 — Scene5Intro component deleted; crossfade replaced by Scene5Slides title card fade |
 | Scene6 CARD_BEATS (pre-quip) | 6.36 / 14.89 / 23.02 / 31.15 | scene6-deploy.mp3 | silence_ends after intro / "no replatforming, no migration" / "not to hundreds of APIs" / "before you go live" | 2026-04-14 | RETIRED 2026-04-15 — scene6-deploy.mp3 regenerated for "No day-one surprises." quip; beats 1–3 shifted left, beat 4 coincidentally stable |
 | Scene6 CARD_BEATS (post-quip, line 543) | 6.20 / 14.35 / 22.45 / 31.15 | scene6-deploy.mp3 | silence_ends after "Four reasons." / "no replatforming, no migration." / "not to hundreds of APIs." / "before you go live." (quip "No day-one surprises." appended at end, after beat 4) | 2026-04-15 | ACTIVE |
 | Scene6 closing tagline window | 39.9 → 41.4 | scene6-deploy.mp3 | "Abstraction over extraction." tagline floats in near scene end, tuned to +2.4s relative to pre-quip timing | 2026-04-15 | ACTIVE |
-| D["scene1-problems"] breath pad | 20.71 (audio 20.56 + 0.15 silence pad) | scene1-problems.mp3 / scene2-solution.mp3 boundary | adds breath gap before "And here's" — must match concat-avatar.ts Scene 1 group duration | 2026-04-14 | ACTIVE |
+| D["scene1-problems"] breath pad | 20.71 (audio 20.56 + 0.15 silence pad) | scene1-problems.mp3 / scene2-solution.mp3 boundary | adds breath gap before "And here's" — must match concat-avatar.ts Scene 1 group duration | 2026-04-14 | RETIRED 2026-04-15 — scene2-solution merged into scene2-all (Option B); scene1 rewrite shortened audio to 13.19s |
+| D["scene1-problems"] breath pad (Agentic) | 13.34 (audio 13.19 + 0.15 silence pad) | scene1-problems.mp3 / scene2-all.mp3 boundary | adds breath gap before "And here's how it works" after "That's the gap AOS closes." | 2026-04-15 | RETIRED 2026-04-16 — scene1 rewritten to Option B ("agentic AI included" + "sits on top of what you already own"); audio extended to 17.37s |
+| D["scene1-problems"] breath pad (Option B) | 17.52 (audio 17.37 + 0.15 silence pad) | scene1-problems.mp3 / scene2-all.mp3 boundary | adds breath gap before "And here's how it works" after "…closes that gap." | 2026-04-16 | RETIRED 2026-04-16 — "AOS sits on top of what you already own" dropped (verbatim repeat of scene2-all opening); audio re-rolled at 15.91s |
+| D["scene1-problems"] breath pad (Option B trimmed) | 16.06 (audio 15.91 + 0.15 silence pad) | scene1-problems.mp3 / scene2-all.mp3 boundary | adds breath gap before "And here's how it works" after "AOS closes that gap." — abstraction reveal deferred to scene2-all to avoid verbatim repeat | 2026-04-16 | ACTIVE |
 
 ## Base-video hard-cuts — public/scenes/*.mp4
 

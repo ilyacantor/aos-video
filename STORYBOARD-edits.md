@@ -2,9 +2,9 @@
 
 Two compositions share the same visual scenes:
 
-| | `aos-movie` (ElevenLabs) | `avatar-demo` (D-ID Mai) |
+| | `aos-movie` (ElevenLabs) | `aos-demo` (D-ID Mai) |
 |---|---|---|
-| **Source** | `src/DemoV2.tsx` | `src/AvatarDemo.tsx` |
+| **Source** | `src/DemoV2.tsx` | `src/AosDemo.tsx` |
 | **VO** | ElevenLabs MP3s, fixed scene durations | D-ID Lily avatar, speech-driven timing |
 | **Runtime** | 3:39 (219s) | 3:31 (211s) |
 
@@ -13,7 +13,7 @@ Two compositions share the same visual scenes:
 ## Avatar Demo — Speech-Driven Timeline
 
 Speech is the single source of truth. Visual scenes persist until narration finishes.
-Durations in `D` map (`AvatarDemo.tsx`) → `concat-avatar.ts` → everything reflows.
+Durations in `D` map (`AosDemo.tsx`) → `concat-avatar.ts` → everything reflows.
 
 | Visual | From | To | Dur | Clip | Speech |
 |--------|------|----|-----|------|--------|
@@ -26,13 +26,13 @@ Durations in `D` map (`AvatarDemo.tsx`) → `concat-avatar.ts` → everything re
 | **Scene 5 Intro** | 1:55 | 2:05 | 10.1s | scene5-intro | "Everything I've shown you so far works for one company. Now let me show you what happens when there are two or more. The leading use case: M&A." **Visual: `convergence_ig.jpeg` full-frame at 0.35 opacity.** |
 | **Scene 5** | 2:05 | 2:39 | 34.4s | scene5-all | Merged narration: M&A framing → combine → QoE → ebitda → x-sell → backoffice. **Visual: PNG slides (MA.png → combine_fs → qofe2 → ebitda2 → x-sell2 → backoffice2) timed to speech breakpoints from `silencedetect` on scene5-all.mp4 — 12.57 / 16.41 / 20.53 / 25.67 / 30.03. scene5.mp4 no longer used.** |
 | **Scene 6** | 2:39 | 3:20 | 40.6s | scene6-deploy | "And the best part: AOS deploys in days, not years. Four reasons…" walks through all 4 boxes (nothing changes / middleware does the work / synthetic data farm / Mai handles the prep). **Visual: static `days.png`.** |
-| **Scene 7** | 3:20 | 3:31 | 8.2s + 3.0s hold | scene7-closing | "AOS is changing the paradigm of enterprise technology. If you want to learn more, find us at autonomous dot tech." **Visual: static `closing-new.png`, with `TAIL_HOLD = 3s` cloned-frame padding so the slide remains on screen after narration ends.** |
+| **Scene 7** | 3:20 | 3:31 | 8.2s + 3.0s hold | scene7-closing | "AOS is changing the paradigm of enterprise technology. If you want to learn more, find us at autonomous dot tech." **Visual: static `closing.png`, with `TAIL_HOLD = 3s` cloned-frame padding so the slide remains on screen after narration ends.** |
 
 ### Iteration workflow
 
 1. Edit script text in `scripts/did-test/generate-avatar.ts`
 2. Regenerate clip: `npx tsx scripts/did-test/generate-avatar.ts scene2-solution`
-3. Update `D` duration in `src/AvatarDemo.tsx` (read from MP4 header)
+3. Update `D` duration in `src/AosDemo.tsx` (read from MP4 header)
 4. Rebuild concat: `npx tsx scripts/did-test/concat-avatar.ts`
 5. Preview in Remotion Studio
 
@@ -42,7 +42,7 @@ Durations in `D` map (`AvatarDemo.tsx`) → `concat-avatar.ts` → everything re
 |---|---|
 | `scripts/did-test/generate-avatar.ts` | D-ID clip generation (Lily presenter, Microsoft TTS) |
 | `scripts/did-test/concat-avatar.ts` | Concatenates clips into `avatar-combined.mp4` with timing gaps |
-| `src/AvatarDemo.tsx` | Remotion composition — `D` map is single source of truth |
+| `src/AosDemo.tsx` | Remotion composition — `D` map is single source of truth |
 | `public/avatar/*.mp4` | Individual D-ID clips |
 | `public/avatar/avatar-combined.mp4` | Combined avatar video |
 | `public/scenes/*.mp4` | Base video split into per-scene segments |

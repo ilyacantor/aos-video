@@ -5,7 +5,7 @@
  *   - `generate-matilda.ts`  → ElevenLabs Matilda MP3s
  *   - `generate-avatar.ts`   → D-ID audio-driven Lily MP4s
  *
- * Only the 10 group-level clips that AvatarDemo.tsx consumes are listed.
+ * Only the 10 group-level clips that AosDemo.tsx consumes are listed.
  * Sub-clips (scene2-discover, scene5-combine, …) were retired when the
  * merged group clips landed.
  */
@@ -22,19 +22,15 @@ export const SCENES: Scene[] = [
   },
   {
     id: "scene1-problems",
-    text: "Enterprises have spent millions on data infrastructure, and it still doesn't work. Most companies plan to invest in AI, but only a few have the systems to support it. Application sprawl and legacy jail leave a wide gap to a reliable, contextual single source of truth. That's the gap AOS closes.",
-  },
-  {
-    id: "scene2-solution",
-    text: "And here's how it works. It sits on top of everything you already have — no migration, no replatforming — and gives your whole organization one shared understanding of what's actually going on.",
+    text: "For twenty years, enterprises have poured billions into every version of the same promise — one system of record, one single source of truth, one integration project after another — and the systems still don't understand each other. The average enterprise runs nearly nine hundred applications, each one describing the same business in its own way, none of them adding up to a single coherent picture. Then comes the next wave. AI agents, multiplying by the quarter. An agent without reliable context isn't an asset, it's a liability — automating the wrong answer faster than any human ever could. Orchestration alone doesn't solve it. Without shared context in the data underneath, the agents keep hallucinating — just in better coordination. That's the gap autonomous closes. One unified context across every system.",
   },
   {
     id: "scene2-all",
-    text: "It starts with discovery. AOS scans your environment and builds a catalog of every system you have — including the ones nobody remembers buying. Then AOS connects to them. Your systems don't change. Your data doesn't move. Our layer sits on top, using the tools you already own — your integration platforms, your APIs, your warehouse. Then it figures out what the data actually means. How customers, products, contracts, and accounts relate to each other — automatically, across every source. And the result is a context layer your whole organization can use. With real-world context captured in your data, analytics are higher-quality and search results are more relevant.",
+    text: "And here's how it works. AOS sits on top of everything you already have — no migration, no replatforming. It scans your systems, figures out what the data means — how customers, products, and contracts actually relate — and gives you a context layer your whole organization can use.",
   },
   {
     id: "scene3a-all",
-    text: "Each AOS deployment includes an integrated version of me. I handle onboarding, training, and configuration, and I answer questions about your data in plain English. I speak fluent spreadsheet, too. You can also ask me to make changes to the platform. Simple things happen instantly. Bigger changes — like adding a new domain to your org — happen with your approval, and I walk you through it.",
+    text: "Each AOS deployment includes an integrated version of me. I'm your concierge agent. I answer questions about your data in plain English, and I can make changes to the platform — simple ones happen instantly, bigger ones need your approval.",
   },
   {
     id: "scene4-knowledgegraph",
@@ -46,11 +42,11 @@ export const SCENES: Scene[] = [
   },
   {
     id: "scene5-all",
-    text: "Seventy percent of M&A deals fail. The real deal-breakers got lost in execution trivia. Convergence automates comprehension. Surface what should break the deal — before it does. Here's what we automate. One unified financial picture across both companies. Quality of earnings, automated — every adjustment flagged. Proforma combined earnings, generated in diligence and tracked through close. Cross-sell thesis, validated across both customer books. Backoffice overlap quantified across people and systems.",
+    text: "Here's what we automate. Unified financials. Quality of earnings. Proforma combined earnings. Cross-sell and upsell opportunities. Backoffice overlap.",
   },
   {
     id: "scene6-deploy",
-    text: "And the best part: AOS deploys in days, not years. Four reasons. First, nothing in your stack changes. We use the systems already in place — no replatforming, no migration. Second, middleware does the work. We connect through your existing integration infrastructure, not to hundreds of APIs. Third, a synthetic data farm gives us enterprise-scale readiness before deployment, so the common problems are caught before you go live. And fourth, I handle the prep myself. Technical discovery, requirements gathering, integration feasibility — all human supervised. No day-one surprises.",
+    text: "And the best part: AOS deploys in days, not years. Four reasons. Nothing in your stack changes — no replatforming, no migration. Middleware does the work — your existing integration infrastructure, not hundreds of APIs. A synthetic data farm catches problems before you go live. And I handle the prep myself — discovery, requirements, feasibility — all human supervised.",
   },
   {
     id: "scene7-closing",

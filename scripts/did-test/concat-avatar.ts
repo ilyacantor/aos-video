@@ -20,7 +20,7 @@ const outFile = resolve(avatarDir, "avatar-combined.mp4");
 
 // ─── Clip durations — read LIVE from MP4 headers, no stale map ──
 // Single source of truth: the MP4 files themselves. This prevents
-// the concat timeline from ever diverging from AvatarDemo.tsx D map
+// the concat timeline from ever diverging from AosDemo.tsx D map
 // (which is itself filled in from these same MP4 headers).
 const clipIds = [
   "scene0-mai-intro",
@@ -56,7 +56,7 @@ console.log("Probed durations:");
 for (const id of clipIds) console.log(`  ${id.padEnd(24)} ${DUR[id].toFixed(2)}s`);
 console.log();
 
-// ─── Narration groups (mirrors AvatarDemo.tsx) ────────────────
+// ─── Narration groups (mirrors AosDemo.tsx) ────────────────
 // One merged D-ID clip per group — zero internal gaps.
 
 interface ClipEntry { id: string; offsetInGroup: number }
@@ -68,12 +68,12 @@ const single = (name: string, id: string): Group => ({
   duration: DUR[id],
 });
 
-const TAIL_HOLD = 3.0; // Must match AvatarDemo.tsx — pads PIP on last clip
+const TAIL_HOLD = 3.0; // Must match AosDemo.tsx — pads PIP on last clip
 
 const groups: Group[] = [
   single("Title Card", "scene0-mai-intro"),
   {
-    // +0.15 = breath gap before "And here's" — matches D["scene1-problems"] in AvatarDemo.tsx
+    // +0.15 = breath gap before "And here's" — matches D["scene1-problems"] in AosDemo.tsx
     name: "Scene 1",
     clips: [{ id: "scene1-problems", offsetInGroup: 0 }],
     duration: DUR["scene1-problems"] + 0.15,
