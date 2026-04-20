@@ -12,6 +12,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import { LogoAvalanche } from "./LogoAvalanche";
+import { MaiChat } from "./MaiChat";
 import { Scene2HowItWorks } from "./Scene2HowItWorks";
 
 // ─── Brand constants ───────────────────────────────────────────
@@ -215,7 +216,7 @@ const StaticSlide: React.FC<{ file: string; fit?: "cover" | "contain" }> = ({
 // ─── Scene 5 Intro — faded full-frame background ──────────────
 const FadedBackground: React.FC<{ file: string; opacity?: number }> = ({
   file,
-  opacity = 0.35,
+  opacity = 1,
 }) => (
   <AbsoluteFill style={{ backgroundColor: C.bg }}>
     <Img
@@ -754,7 +755,7 @@ export const AosDemo: React.FC<{ showAvatar?: boolean }> = ({
         <Scene2HowItWorks />
       </Sequence>
       <Sequence from={T_S3A} durationInFrames={f(G.scene3a)}>
-        <SceneVideo file="scene3a.mp4" startFrom={10} />
+        <MaiChat />
       </Sequence>
       <Sequence from={T_S4} durationInFrames={f(G.scene4)}>
         <SceneVideo file="scene4.mp4" />
