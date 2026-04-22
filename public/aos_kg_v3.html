@@ -8,7 +8,7 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    background: #1a1a1a;
+    background: #464A58;
     color: #e2e8f0;
     font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
     height: 100vh;
@@ -103,7 +103,7 @@
     position: relative;
     min-width: 0;
     overflow: hidden;
-    background: #1a1a1a;
+    background: #2E3C49;
   }
   #graph-container {
     width: 100%;
@@ -401,11 +401,11 @@ function buildVisEdges() {
     from: e.from,
     to: e.to,
     color: {
-      color: e.cross ? '#dc262666' : '#ffffff18',
-      highlight: e.cross ? '#dc2626' : '#ffffff55',
-      hover: e.cross ? '#dc262699' : '#ffffff33'
+      color: e.cross ? '#dc2626bb' : '#ffffff55',
+      highlight: e.cross ? '#dc2626' : '#ffffffbb',
+      hover: e.cross ? '#dc2626dd' : '#ffffff88'
     },
-    width: e.cross ? 1.8 : 1.2,
+    width: e.cross ? 2.6 : 2.0,
     dashes: e.cross ? [8, 5] : false,
     arrows: { to: { enabled: true, scaleFactor: 0.4, type: 'arrow' }},
     smooth: { type: 'continuous' },
