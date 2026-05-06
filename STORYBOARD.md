@@ -1,10 +1,8 @@
 # AOS Demo — Storyboard
 
-**Active composition:** `aos-demo` (`AosDemo` with Mai PIP) — single output, single render target. Script text flows: `scripts/did-test/avatar-scenes.ts` → ElevenLabs Matilda MP3 → D-ID Lily audio-driven MP4 → Remotion composition.
+**Active composition:** `aos-demo` (`AosDemo` with Mai PIP). Script text flows: `scripts/did-test/avatar-scenes.ts` → ElevenLabs Matilda MP3 → D-ID Lily audio-driven MP4 → Remotion composition.
 
-**RETIRED 2026-04-14:** The `aos-movie` (no-PIP) variant was removed. Do not re-register it in `Root.tsx` or re-add `render` / `render:both` scripts. All edits and renders land only on `aos-demo`. `npm run render` = aos-demo.
-
-**MAINTENANCE RULE:** This file MUST be updated in the same edit as any audio trim, D map bump, scene regen, breath gap, or base-video re-export. Narration blocks below contain the **full text** of each clip — not snippets or references. See `feedback_sync_golden_rules.md` Rule 4.
+**MAINTENANCE RULE:** Update this file in the same edit as any audio trim, `D` map bump, scene regen, or base-video re-export. Narration blocks below contain the **full text** of each clip — not snippets or references. See `feedback_sync_golden_rules.md` Rule 4.
 
 ---
 
@@ -12,85 +10,69 @@
 
 Speech is the single source of truth. Visual scenes persist until narration finishes. Durations come from the `D` map in `src/AosDemo.tsx` (probed from `public/avatar/*.mp4` headers).
 
-**Total runtime: 3:46.2** (current state after the 2026-04-15 Mai quip additions to scene3a + scene6).
+**Total runtime: 2:51.9** (after 2026-04-20 scene1/scene3a/scene6 regens + 2026-04-18 Mai intro retirement and scene5 carousel rebuild).
 
-### Title Card — 0:00.0 → 0:05.4 — 5.4s
-**Clip:** `scene0-mai-intro` &nbsp;|&nbsp; **Visual:** Title card with name + favicon watermark.
+### Title Card — 0:00.0 → 0:03.0 — 3.0s (silent)
+**Visual:** Brand flash — "autonomOS / The trusted context layer for your enterprise / Connect. Contextualize. Execute." with favicon settling into the watermark corner.
 
-> Hi, I'm Mai, I'm the AI agent built into AOS, let me walk you through the platform.
+> (no narration — `TITLE_FLASH = 3.0s`. The former `scene0-mai-intro` greeting "Hi, I'm Mai…" was retired 2026-04-18 and is no longer in `TRACKS`. The clip is kept in the `D` map for back-compat only.)
 
-### Scene 1 — 0:05.4 → 0:26.1 — 20.7s
-**Clip:** `scene1-problems` &nbsp;|&nbsp; **Visual:** `public/scenes/scene1.mp4` (problem-space animation).
+### Scene 1 — 0:03.0 → 0:58.2 — 55.2s
+**Clip:** `scene1-problems` &nbsp;|&nbsp; **Visual:** `LogoAvalanche` component (application-sprawl / context-gap animation — replaces retired `public/scenes/scene1.mp4`).
 
-> Enterprises have spent millions on data infrastructure, and it still doesn't work. Most companies plan to invest in AI, but only a few have the systems to support it. Application sprawl and legacy jail leave a wide gap to a reliable, contextual single source of truth. That's the gap AOS closes.
+> For decades, enterprises have poured billions into every version of the same promise — one system of record, one single source of truth, one integration project after another — and the systems still don't understand each other. The average enterprise runs nearly nine hundred applications, each one describing the same business in its own way, none of them adding up to a single coherent picture. Then comes the next wave. AI agents, multiplying by the quarter. An agent without reliable context isn't an asset, it's a liability — automating the wrong answer faster than any human ever could. Orchestration alone doesn't solve it. Without shared context in the data underneath, the agents keep hallucinating — just in better coordination. That's the gap autonomous closes. One unified context across every system.
 
-**Note:** `D["scene1-problems"] = 20.71` = 20.56 audio + 0.15 silent breath gap. The breath gap was added 2026-04-15 to fix the rough "And here's…" onset into Scene 2 Intro. Must match `concat-avatar.ts` Scene 1 group duration (`DUR["scene1-problems"] + 0.15`) or BG audio and PIP avatar desync.
+**Note:** `D["scene1-problems"] = 55.22` = 55.07 audio + 0.15 breath pad (regen 2026-04-20, trimmed head + tail). Script replaces the prior short "Enterprises have spent millions…" version.
 
-### Scene 2 Intro — 0:26.1 → 0:38.2 — 12.1s
-**Clip:** `scene2-solution` &nbsp;|&nbsp; **Visual:** `public/scenes/scene2i.mp4` (solution intro animation).
+### Scene 2 — 0:58.2 → 1:20.4 — 22.2s
+**Clip:** `scene2-all` &nbsp;|&nbsp; **Visual:** `Scene2HowItWorks` component (discover → connect → resolve, built in code — replaces retired `scene2i.mp4` + `scene2.mp4` two-clip split).
 
-> And here's how it works. It sits on top of everything you already have — no migration, no replatforming — and gives your whole organization one shared understanding of what's actually going on.
+> And here's how it works. AOS sits on top of everything you already have — no migration, no replatforming. It scans your systems, figures out what the data means — how customers, products, and contracts actually relate — and gives you a context layer your whole organization can use.
 
-### Scene 2 — 0:38.2 → 1:26.2 — 48.0s
-**Clip:** `scene2-all` &nbsp;|&nbsp; **Visual:** `public/scenes/scene2.mp4` (discover → connect → resolve animation).
+**Note:** `D["scene2-all"] = 22.2` = 0.7s pre-roll fade-in + 19.30s audio + 2.2s tail hold. Audio plays from `T_S2 + f(0.7)` so Mai never cuts in on the dark fade-in frame; every keyframe inside `Scene2HowItWorks` is shifted to match. The prior `scene2-solution` + `scene2-all` merged-narration pair is retired.
 
-> It starts with discovery. AOS scans your environment and builds a catalog of every system you have — including the ones nobody remembers buying. Then AOS connects to them. Your systems don't change. Your data doesn't move. Our layer sits on top, using the tools you already own — your integration platforms, your APIs, your warehouse. Then it figures out what the data actually means. How customers, products, contracts, and accounts relate to each other — automatically, across every source. And the result is a context layer your whole organization can use. With real-world context captured in your data, analytics are higher-quality and search results are more relevant.
+### Scene 3A — 1:20.4 → 1:36.2 — 15.7s
+**Clip:** `scene3a-all` &nbsp;|&nbsp; **Visual:** `MaiChat` component (chat UI built in code — replaces retired `scene3a.mp4`).
 
-**Note:** scene2.mp4 was regenerated 2026-04-14 — clean 3-panel head 0–19.97s + frozen last frame through 47.96s. The pre-fix version baked in three hard-cuts (12.03 / 20.03 / 29.03s) that bound the chatbox panel to wrong narration; all retired in `remotion_cut_registry.md`.
+> Each AOS deployment includes an integrated version of me. I'm your concierge agent. I answer questions about your data in plain English, and I can make changes to the platform — simple ones happen instantly, bigger ones need your approval.
 
-### Scene 3A — 1:26.2 → 1:52.4 — 26.2s
-**Clip:** `scene3a-all` &nbsp;|&nbsp; **Visual:** `public/scenes/scene3a.mp4` (chatbox + platform management).
+**Note:** Regen 2026-04-20 merged the former Q&A + platform-management sentences into one. The "I speak fluent spreadsheet, too." and "No day-one surprises." Mai quips were removed. The 13.31s sacrosanct mid-scene cut is no longer relevant — no hard cut in the code-rendered chat UI.
 
-> Each AOS deployment includes an integrated version of me. I handle onboarding, training, and configuration, and I answer questions about your data in plain English. I speak fluent spreadsheet, too. You can also ask me to make changes to the platform. Simple things happen instantly. Bigger changes — like adding a new domain to your org — happen with your approval, and I walk you through it.
-
-**Mai quip (2026-04-15):** "I speak fluent spreadsheet, too." — fluency/knowledge note, inserted after "plain English." Added +3.04s to scene3a-all (was 23.16 → 26.20). Cascades scene4→scene7 forward by 3.04s.
-
-**Sacrosanct cut:** mid-scene split at **13.31s** (was 10.72 pre-quip, bumped 2026-04-15), bound to the silence between "I speak fluent spreadsheet, too." and "You can also ask me to make changes…". Preserves the topical break (answering questions → making platform changes) around the base-video hard cut at frame 420. Registry-tracked in `remotion_cut_registry.md`.
-
-### Scene 4 — 1:52.4 → 2:06.9 — 14.5s
-**Clip:** `scene4-knowledgegraph` &nbsp;|&nbsp; **Visual:** `public/scenes/scene4.mp4` (knowledge graph animation).
+### Scene 4 — 1:36.2 → 1:50.6 — 14.5s
+**Clip:** `scene4-knowledgegraph` &nbsp;|&nbsp; **Visual:** `public/scenes/scene4.mp4` (knowledge graph animation — only remaining base-video scene).
 
 > What ties all of this together is the knowledge graph. It's a living map of your people, your systems, and how they actually relate to each other. That's the context your agents have been missing. And it's what lets them act instead of guess.
 
-### Scene 5 Intro — 2:06.9 → 2:16.3 — 9.4s
-**Clip:** `scene5-intro` &nbsp;|&nbsp; **Visual:** `public/convergence_ig.jpeg` full-frame at 0.35 opacity + kinetic typography stages.
+### Scene 5 Intro — 1:50.6 → 2:00.1 — 9.4s
+**Clip:** `scene5-intro` &nbsp;|&nbsp; **Visual:** `public/convergence_ig.jpeg` full-frame at 0.35 opacity (`FadedBackground`). Kinetic-typography stages from the v6 storyboard have been removed.
 
 > Everything I've shown you so far works for one company. Now let me show you what happens when there are two or more. The leading use case: M&A.
 
-**Kinetic typography stages** (driven by `scene5-all.mp3` sentence onsets, not `scene5-intro.mp3` — the next scene's opening beats are foreshadowed here):
-- Stage 1 (0.2–2.6s): "Seventy percent of M&A deals fail"
-- Stage 2 (2.8–5.8s): "real deal-breakers got lost in execution trivia"
-- Stage 3 (6.1–9.7s): "Convergence automates comprehension"
-- Stage 4 (9.9–13.0s): "Surface what should break the deal — before it does"
-- `rootFade` cross-fade to `combine_fs.png` at 12.44s ("Here's what we automate" speech start in scene5-all)
+### Scene 5 — 2:00.1 → 2:11.2 — 11.1s
+**Clip:** `scene5-all` &nbsp;|&nbsp; **Visual:** 3D carousel ring (`Scene5Slides`) — title card, then 5 screenshots orbit clockwise.
 
-The former Stage 5 "M&A, de-risked" was removed 2026-04-14 from both narration (`scene5-all.mp3` trim) and visual. All prior Scene5Intro/Scene5Slides entries are retired in `remotion_cut_registry.md`; current ACTIVE entries are the post-trim values.
+> Here's what we automate. Unified financials. Quality of earnings. Proforma combined earnings. Cross-sell and upsell opportunities. Backoffice overlap.
 
-### Scene 5 — 2:16.3 → 2:51.3 — 35.0s
-**Clip:** `scene5-all` &nbsp;|&nbsp; **Visual:** PNG slide sequence timed to speech breakpoints in `scene5-all.mp3`.
+**Carousel beats** (`CAROUSEL_BEATS` in `AosDemo.tsx`, from `silencedetect` on `scene5-all.mp3` 2026-04-18 regen):
+- 0.00–1.02s: "Here's what we automate." title card fades in then out
+- 1.30s: carousel activates — `combine_fs.png` at front ("Unified financials")
+- 3.08s: `qofe2.png` rotates to front ("Quality of earnings")
+- 4.69s: `ebitda2.png` rotates to front ("Proforma combined earnings")
+- 6.74s: `x-sell2.png` rotates to front ("Cross-sell and upsell opportunities")
+- 9.18s: `backoffice2.png` rotates to front ("Backoffice overlap")
 
-> Seventy percent of M&A deals fail. The real deal-breakers got lost in execution trivia. Convergence automates comprehension. Surface what should break the deal — before it does. Here's what we automate. One unified financial picture across both companies. Quality of earnings, automated — every adjustment flagged. Proforma combined earnings, generated in diligence and tracked through close. Cross-sell thesis, validated across both customer books. Backoffice overlap quantified across people and systems.
+`D["scene5-all"] = 11.1` = 10.89 audio + 0.21 breath. The former long-form narration ("Seventy percent of M&A deals fail… Convergence automates comprehension… Surface what should break the deal…") and the PNG fade-sequence with `MA.png` title slide are retired.
 
-**Slide sequence** (breakpoints from `silencedetect` on `scene5-all.mp3`, post-trim):
-- 0.00–12.44s: cross-fade from Scene 5 Intro kinetic typography into `combine_fs.png`
-- 12.44–17.66s: `combine_fs.png` — "one unified financial picture across both companies"
-- 17.66–21.82s: `qofe2.png` — "quality of earnings, automated — every adjustment flagged"
-- 21.82–27.27s: `ebitda2.png` — "proforma combined earnings, generated in diligence and tracked through close"
-- 27.27–31.60s: `x-sell2.png` — "cross-sell thesis, validated across both customer books"
-- 31.60–34.96s: `backoffice2.png` — "backoffice overlap quantified across people and systems"
+### Scene 6 — 2:11.2 → 2:40.0 — 28.9s
+**Clip:** `scene6-deploy` &nbsp;|&nbsp; **Visual:** `Scene6Deploy` component (kinetic headline + contrast bars + 4-reason row — replaces retired static `public/days.png`).
 
-### Scene 6 — 2:51.3 → 3:34.4 — 43.1s
-**Clip:** `scene6-deploy` &nbsp;|&nbsp; **Visual:** `public/days.png` static slide + card animation beats.
+> And the best part: AOS deploys in days, not years. Four reasons. Nothing in your stack changes — no replatforming, no migration. Middleware does the work — your existing integration infrastructure, not hundreds of APIs. A synthetic data farm catches problems before you go live. And I handle the prep myself — discovery, requirements, feasibility — all human supervised.
 
-> And the best part: AOS deploys in days, not years. Four reasons. First, nothing in your stack changes. We use the systems already in place — no replatforming, no migration. Second, middleware does the work. We connect through your existing integration infrastructure, not to hundreds of APIs. Third, a synthetic data farm gives us enterprise-scale readiness before deployment, so the common problems are caught before you go live. And fourth, I handle the prep myself. Technical discovery, requirements gathering, integration feasibility — all human supervised. No day-one surprises.
+**Card beats** (`CARD_BEATS` in `AosDemo.tsx`, `silencedetect -35dB:0.2` on 2026-04-20 regen): **5.41 / 11.57 / 18.14 / 24.10s**. Cards: (1) Nothing in the stack changes, (2) Middleware does the work, (3) Synthetic data farm, (4) Mai handles the prep.
 
-**Mai quip (2026-04-15):** "No day-one surprises." — prep/pragmatism note, appended after "all human supervised." Added +2.40s to scene6-deploy (was 40.68 → 43.08). Cascades scene7 forward by 2.40s.
+**Closing tagline:** "Abstraction over extraction." fades in from 26.5s → 28.0s and holds through scene end at 28.87s. The "No day-one surprises." Mai quip was trimmed out in the 2026-04-20 regen along with the ordinals ("First… Second… Third… And fourth…").
 
-**Card beats** (`CARD_BEATS` in AosDemo.tsx line 543): **6.20 / 14.35 / 22.45 / 31.15s** (bumped 2026-04-15 post-quip regen), bound to silence_ends after "Four reasons." / "no replatforming, no migration." / "not to hundreds of APIs." / "before you go live." All four beats land before the quip — beat 4 coincidentally stable.
-
-**Closing tagline:** "Abstraction over extraction." floats in at 39.9s → 41.4s (was 37.5/39.0 pre-quip, +2.4s), holds until scene end at 43.08s. Mai's quip plays over the fully-visible tagline.
-
-### Scene 7 — 3:34.4 → 3:46.2 — 11.9s (8.9s speech + 3.0s TAIL_HOLD)
+### Scene 7 — 2:40.0 → 2:51.9 — 11.9s (8.87s speech + 3.0s TAIL_HOLD)
 **Clip:** `scene7-closing` &nbsp;|&nbsp; **Visual:** `public/closing.png` static slide.
 
 > AOS is changing the paradigm of enterprise technology, and how it's deployed. If you want to learn more, find us at autonomous dot tech.
@@ -114,11 +96,14 @@ The former Stage 5 "M&A, de-risked" was removed 2026-04-14 from both narration (
 
 | File | Purpose |
 |---|---|
-| `scripts/did-test/avatar-scenes.ts` | 10-clip narration script — single source of truth |
+| `scripts/did-test/avatar-scenes.ts` | 9-clip narration script — single source of truth (`scene0-mai-intro` retained in file but not in `TRACKS`) |
 | `scripts/did-test/generate-matilda.ts` | ElevenLabs Matilda TTS → `public/avatar/audio/*.mp3` |
 | `scripts/did-test/generate-avatar.ts` | Uploads MP3s to D-ID `/audios` → audio-driven Lily clips in `public/avatar/*.mp4` |
 | `scripts/did-test/concat-avatar.ts` | Concatenates clips into `avatar-combined.mp4` (+ 3s tail hold, + breath gaps) |
 | `src/AosDemo.tsx` | Remotion composition — `D` map is the duration source of truth |
+| `src/LogoAvalanche.tsx` | Scene 1 visual |
+| `src/Scene2HowItWorks.tsx` | Scene 2 visual |
+| `src/MaiChat.tsx` | Scene 3A visual |
 | `public/avatar/audio/*.mp3` | Matilda voice tracks, played by `<Audio>` BG layer |
 | `public/avatar/*.mp4` | D-ID audio-driven Lily clips (per-clip input to `concat-avatar.ts`) |
 | `public/avatar/avatar-combined.mp4` | Concatenated avatar video, muted `OffthreadVideo` PIP source |
@@ -129,12 +114,11 @@ The former Stage 5 "M&A, de-risked" was removed 2026-04-14 from both narration (
 | Asset | Used By |
 |---|---|
 | `public/favicon.png` | Title card + persistent watermark |
-| `public/convergence_ig.jpeg` | Scene 5 Intro faded background |
-| `public/combine_fs.png` | Scene 5 slide 1 — unified financial picture |
-| `public/qofe2.png` | Scene 5 slide 2 — quality of earnings |
-| `public/ebitda2.png` | Scene 5 slide 3 — proforma combined earnings |
-| `public/x-sell2.png` | Scene 5 slide 4 — cross-sell thesis |
-| `public/backoffice2.png` | Scene 5 slide 5 — backoffice overlap |
-| `public/days.png` | Scene 6 static slide |
+| `public/convergence_ig.jpeg` | Scene 5 Intro faded background (0.35 opacity) |
+| `public/combine_fs.png` | Scene 5 carousel — unified financials |
+| `public/qofe2.png` | Scene 5 carousel — quality of earnings |
+| `public/ebitda2.png` | Scene 5 carousel — proforma combined earnings |
+| `public/x-sell2.png` | Scene 5 carousel — cross-sell & upsell |
+| `public/backoffice2.png` | Scene 5 carousel — backoffice overlap |
 | `public/closing.png` | Scene 7 static slide |
-| `public/scenes/scene{1,2i,2,3a,4}.mp4` | Base video segments for scenes 1–4 |
+| `public/scenes/scene4.mp4` | Scene 4 base video (only surviving base-video scene — `scene1.mp4`, `scene2.mp4`, `scene2i.mp4`, `scene3a.mp4` retired in favor of code components) |

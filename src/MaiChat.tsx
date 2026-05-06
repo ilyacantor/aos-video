@@ -41,9 +41,9 @@ const SCENARIO: Message[] = [
 ];
 
 const CHARS_PER_FRAME = 3;
-const MSG_PAUSE = 30; // frames
-const META_DELAY = 10; // frames
-const FADE_IN = 15; // frames
+const MSG_PAUSE = 30;
+const META_DELAY = 10;
+const FADE_IN = 15;
 
 type TimelineEntry = {
   msg: Message;
@@ -90,9 +90,9 @@ const MetaGrid: React.FC<{ meta: [string, string][] }> = ({ meta }) => (
     style={{
       display: "grid",
       gridTemplateColumns: "repeat(3, 1fr)",
-      gap: 4,
-      marginTop: 6,
-      marginLeft: 32,
+      gap: 8,
+      marginTop: 10,
+      marginLeft: 54,
       maxWidth: "80%",
     }}
   >
@@ -102,22 +102,22 @@ const MetaGrid: React.FC<{ meta: [string, string][] }> = ({ meta }) => (
         style={{
           background: S.metaCellBg,
           border: `1px solid ${S.border}`,
-          borderRadius: 5,
-          padding: "5px 7px",
+          borderRadius: 8,
+          padding: "8px 12px",
         }}
       >
         <div
           style={{
-            fontSize: 9,
+            fontSize: 14,
             textTransform: "uppercase",
             letterSpacing: "0.06em",
             color: S.textMuted,
-            marginBottom: 2,
+            marginBottom: 3,
           }}
         >
           {label}
         </div>
-        <div style={{ fontSize: 11, fontWeight: 600, color: S.text }}>
+        <div style={{ fontSize: 18, fontWeight: 600, color: S.text }}>
           {value}
         </div>
       </div>
@@ -143,7 +143,7 @@ const Bubble: React.FC<{
       <div
         style={{
           display: "flex",
-          gap: 7,
+          gap: 12,
           alignItems: "flex-start",
           justifyContent: isUser ? "flex-end" : "flex-start",
         }}
@@ -151,18 +151,18 @@ const Bubble: React.FC<{
         {!isUser && (
           <div
             style={{
-              width: 22,
-              height: 22,
-              borderRadius: 5,
+              width: 38,
+              height: 38,
+              borderRadius: 8,
               background: S.purple,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 9,
+              fontSize: 15,
               fontWeight: 700,
               color: "#fff",
               flexShrink: 0,
-              marginTop: 2,
+              marginTop: 3,
             }}
           >
             M
@@ -171,9 +171,9 @@ const Bubble: React.FC<{
         <div
           style={{
             maxWidth: "80%",
-            padding: "8px 11px",
-            borderRadius: 8,
-            fontSize: 13,
+            padding: "14px 18px",
+            borderRadius: 12,
+            fontSize: 22,
             lineHeight: 1.55,
             background: isUser ? S.userBubbleBg : S.maiBubbleBg,
             border: `1px solid ${isUser ? S.userBubbleBorder : S.border}`,
@@ -185,10 +185,10 @@ const Bubble: React.FC<{
             <span
               style={{
                 display: "inline-block",
-                width: 2,
+                width: 3,
                 height: "0.9em",
                 background: S.cursor,
-                marginLeft: 1,
+                marginLeft: 2,
                 verticalAlign: "text-bottom",
                 opacity: Math.floor(frame / 9) % 2 === 0 ? 1 : 0,
               }}
@@ -198,18 +198,18 @@ const Bubble: React.FC<{
         {isUser && (
           <div
             style={{
-              width: 22,
-              height: 22,
-              borderRadius: 5,
+              width: 38,
+              height: 38,
+              borderRadius: 8,
               background: "rgba(255,255,255,0.1)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 9,
+              fontSize: 15,
               fontWeight: 700,
               color: S.textMuted,
               flexShrink: 0,
-              marginTop: 2,
+              marginTop: 3,
             }}
           >
             U
@@ -225,7 +225,6 @@ const TAB_LABELS = ["Discovery Status", "Report Config", "Monthly Review"];
 
 export const MaiChat: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
 
   const fadeOp = Math.min(1, frame / FADE_IN);
 
@@ -242,9 +241,9 @@ export const MaiChat: React.FC = () => {
     >
       <div
         style={{
-          width: 680,
-          height: 760,
-          borderRadius: 14,
+          width: 1120,
+          height: 920,
+          borderRadius: 22,
           border: `1px solid ${S.border}`,
           background: S.chatBg,
           boxShadow:
@@ -259,8 +258,8 @@ export const MaiChat: React.FC = () => {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 9,
-            padding: "14px 17px",
+            gap: 14,
+            padding: "20px 28px",
             borderBottom: `1px solid ${S.border}`,
             background: "rgba(0,0,0,0.2)",
             flexWrap: "wrap",
@@ -268,14 +267,14 @@ export const MaiChat: React.FC = () => {
         >
           <div
             style={{
-              width: 30,
-              height: 30,
-              borderRadius: 7,
+              width: 48,
+              height: 48,
+              borderRadius: 10,
               background: S.purple,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 12,
+              fontSize: 20,
               fontWeight: 700,
               color: "#fff",
             }}
@@ -283,15 +282,15 @@ export const MaiChat: React.FC = () => {
             M
           </div>
           <div style={{ marginRight: "auto" }}>
-            <div style={{ fontSize: 14, fontWeight: 600, color: S.text }}>
+            <div style={{ fontSize: 22, fontWeight: 600, color: S.text }}>
               Mai
             </div>
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 5,
-                fontSize: 10,
+                gap: 7,
+                fontSize: 14,
                 color: S.green,
                 textTransform: "uppercase",
                 letterSpacing: "0.08em",
@@ -300,8 +299,8 @@ export const MaiChat: React.FC = () => {
             >
               <div
                 style={{
-                  width: 5,
-                  height: 5,
+                  width: 7,
+                  height: 7,
                   borderRadius: "50%",
                   background: S.green,
                   boxShadow: `0 0 5px rgba(52,211,153,0.8)`,
@@ -316,17 +315,17 @@ export const MaiChat: React.FC = () => {
           <div
             style={{
               display: "flex",
-              gap: 6,
+              gap: 10,
               flexBasis: "100%",
-              marginTop: 6,
+              marginTop: 8,
             }}
           >
             {TAB_LABELS.map((label, i) => (
               <div
                 key={label}
                 style={{
-                  padding: "4px 10px",
-                  fontSize: 11,
+                  padding: "6px 16px",
+                  fontSize: 17,
                   fontWeight: i === 2 ? 600 : 500,
                   borderRadius: 999,
                   border: `1px solid ${i === 2 ? "rgba(139,92,246,0.45)" : S.border}`,
@@ -345,10 +344,10 @@ export const MaiChat: React.FC = () => {
         <div
           style={{
             flex: 1,
-            padding: "16px 17px",
+            padding: "24px 28px",
             display: "flex",
             flexDirection: "column",
-            gap: 14,
+            gap: 20,
             overflow: "hidden",
           }}
         >
@@ -362,8 +361,8 @@ export const MaiChat: React.FC = () => {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 9,
-            padding: "11px 17px",
+            gap: 14,
+            padding: "16px 28px",
             borderTop: `1px solid ${S.border}`,
             background: "rgba(0,0,0,0.15)",
           }}
@@ -371,7 +370,7 @@ export const MaiChat: React.FC = () => {
           <div
             style={{
               flex: 1,
-              fontSize: 13,
+              fontSize: 20,
               color: "rgba(255,255,255,0.25)",
             }}
           >
@@ -379,15 +378,15 @@ export const MaiChat: React.FC = () => {
           </div>
           <div
             style={{
-              width: 27,
-              height: 27,
-              borderRadius: 5,
+              width: 42,
+              height: 42,
+              borderRadius: 8,
               background: S.purple,
               opacity: 0.35,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 13,
+              fontSize: 20,
               color: "#fff",
             }}
           >

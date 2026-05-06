@@ -22,7 +22,7 @@ export const SCENES: Scene[] = [
   },
   {
     id: "scene1-problems",
-    text: "For twenty years, enterprises have poured billions into every version of the same promise — one system of record, one single source of truth, one integration project after another — and the systems still don't understand each other. The average enterprise runs nearly nine hundred applications, each one describing the same business in its own way, none of them adding up to a single coherent picture. Then comes the next wave. AI agents, multiplying by the quarter. An agent without reliable context isn't an asset, it's a liability — automating the wrong answer faster than any human ever could. Orchestration alone doesn't solve it. Without shared context in the data underneath, the agents keep hallucinating — just in better coordination. That's the gap autonomous closes. One unified context across every system.",
+    text: "For decades, enterprises have poured billions into every version of the same promise — one system of record, one single source of truth, one integration project after another — and the systems still don't understand each other. The average enterprise runs nearly nine hundred applications, each one describing the same business in its own way, none of them adding up to a single coherent picture. Then comes the next wave. AI agents, multiplying by the quarter. An agent without reliable context isn't an asset, it's a liability — automating the wrong answer faster than any human ever could. Orchestration alone doesn't solve it. Without shared context in the data underneath, the agents keep hallucinating — just in better coordination. That's the gap autonomous closes. One unified context across every system.",
   },
   {
     id: "scene2-all",

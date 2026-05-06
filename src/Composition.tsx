@@ -165,7 +165,7 @@ export const MyComposition = () => {
               transform: `translateY(${(1 - line1Progress) * 30}px)`,
             }}
           >
-            The Semantic Operating System for Enterprise
+            The trusted context layer for your enterprise
           </div>
 
           <div

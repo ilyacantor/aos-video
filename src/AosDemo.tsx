@@ -29,7 +29,7 @@ const C = {
 // update duration here → everything reflows.
 const D: Record<string, number> = {
   "scene0-mai-intro": 5.43, // retained for back-compat; not in TRACKS as of 2026-04-18
-  "scene1-problems": 55.22, // 55.07 audio + 0.15 breath pad (regen 2026-04-20, trimmed b4 + tail)
+  "scene1-problems": 54.80, // 54.65 audio + 0.15 breath pad (regen 2026-05-06, "twenty years" → "decades")
   "scene2-all": 22.2, // 0.7 pre-roll fade-in + 19.30 audio + 2.2 tail hold (audio track starts at T_S2 + f(0.7))
   "scene3a-all": 15.73, // merged Q&A + config into one sentence (regen 2026-04-20)
   "scene4-knowledgegraph": 14.48,
@@ -153,7 +153,7 @@ const TitleCard: React.FC = () => {
           <span style={{ color: C.teal }}>OS</span>
         </div>
         <div style={{ fontSize: 24, fontWeight: 500, color: C.caption }}>
-          The System of Record for Enterprise
+          The trusted context layer for your enterprise
         </div>
         <div
           style={{

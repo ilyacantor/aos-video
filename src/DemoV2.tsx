@@ -476,7 +476,7 @@ const Scene0Title: React.FC = () => {
           <span style={{ color: C.teal }}>OS</span>
         </div>
         <div style={{ fontSize: 24, fontWeight: 500, color: C.caption }}>
-          The Semantic Operating System for Enterprise
+          The trusted context layer for your enterprise
         </div>
         <div
           style={{
